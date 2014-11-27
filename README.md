@@ -1,4 +1,4 @@
-3rdparty
-========
+Romein-gridding
+===============
 
-3rd party code used in SKA-Science Data Processor project
+John Romein's code from ftp://ftp.astron.nl/outgoing/romein/Gridding-0.2.tar.bz.
