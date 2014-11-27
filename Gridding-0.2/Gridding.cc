@@ -55,20 +55,20 @@
 
 
 #if MODE == MODE_SIMPLE
-typedef float2 SupportType[SUPPORT_V][SUPPORT_U];
+typedef double2 SupportType[SUPPORT_V][SUPPORT_U];
 #elif MODE == MODE_OVERSAMPLE
 #if ORDER == ORDER_W_OV_OU_V_U
-typedef float2 SupportType[W_PLANES][OVERSAMPLE_V][OVERSAMPLE_U][SUPPORT_V][SUPPORT_U];
+typedef double2 SupportType[W_PLANES][OVERSAMPLE_V][OVERSAMPLE_U][SUPPORT_V][SUPPORT_U];
 #elif ORDER == ORDER_W_V_OV_U_OU
-typedef float2 SupportType[W_PLANES][SUPPORT_V][OVERSAMPLE_V][SUPPORT_U][OVERSAMPLE_U];
+typedef double2 SupportType[W_PLANES][SUPPORT_V][OVERSAMPLE_V][SUPPORT_U][OVERSAMPLE_U];
 #endif
 #elif MODE == MODE_INTERPOLATE
-typedef float2 SupportType[W_PLANES][SUPPORT_V + 2][SUPPORT_U + 2];
+typedef double2 SupportType[W_PLANES][SUPPORT_V + 2][SUPPORT_U + 2];
 #endif
 
-typedef float2 GridType[GRID_V][GRID_U][POLARIZATIONS];
-typedef float3 UVWtype[BASELINES][TIMESTEPS][CHANNELS];
-typedef float2 VisibilitiesType[BASELINES][TIMESTEPS][CHANNELS][POLARIZATIONS];
+typedef double2 GridType[GRID_V][GRID_U][POLARIZATIONS];
+typedef double3 UVWtype[BASELINES][TIMESTEPS][CHANNELS];
+typedef double2 VisibilitiesType[BASELINES][TIMESTEPS][CHANNELS][POLARIZATIONS];
 
 
 unsigned nrThreads;
@@ -78,7 +78,7 @@ void addGrids(GridType a, const GridType b[])
 {
 #if defined __AVX__
 #pragma omp parallel for
-  for (int i = 0; i < GRID_V * GRID_U * POLARIZATIONS / 4; i ++) {
+  for (int i = 0; i < GRID_V * GRID_U * POLARIZATIONS / 2; i ++) {
     __m256 sum = ((__m256 *) b)[i];
 
     for (unsigned g = 1; g < nrThreads; g ++)
@@ -88,7 +88,7 @@ void addGrids(GridType a, const GridType b[])
   }
 #elif defined __SSE2__ && !defined __CUDA__ && !defined __OPENCL__
 #pragma omp parallel for schedule(static, 65536)
-  for (int i = 0; i < GRID_V * GRID_U * POLARIZATIONS / 2; i ++) {
+  for (int i = 0; i < GRID_V * GRID_U * POLARIZATIONS; i ++) {
     __m128 sum = ((__m128 *) b)[i];
 
     for (unsigned g = 1; g < nrThreads; g ++)
@@ -101,7 +101,7 @@ void addGrids(GridType a, const GridType b[])
   for (int v = 0; v < GRID_V; v ++)
     for (unsigned u = 0; u < GRID_U; u ++)
       for (unsigned pol = 0; pol < POLARIZATIONS; pol ++) {
-        float2 sum = b[0][v][u][pol];
+        double2 sum = b[0][v][u][pol];
 
         for (unsigned g = 1; g < nrThreads; g ++)
           sum += b[g][v][u][pol];
@@ -172,7 +172,7 @@ const char *errorMessage(cl::Error &error)
 
 unsigned optimalNrThreads(unsigned jobs, unsigned maxNrThreads)
 {
-  return (unsigned) ceilf(jobs / ceilf((float) jobs / maxNrThreads) / 32) * 32;
+  return (unsigned) ceilf(jobs / ceilf((double) jobs / maxNrThreads) / 32) * 32;
 }
 
 
@@ -180,10 +180,12 @@ unsigned optimalNrThreads(unsigned jobs, unsigned maxNrThreads)
 
 #if MODE == MODE_SIMPLE || MODE == MODE_OVERSAMPLE
 #if defined USE_TEXTURE
-texture<float2, 1, cudaReadModeElementType> supportTexture;
+// texture<double2, 1, cudaReadModeElementType> supportTexture;
+texture<int4, 1, cudaReadModeElementType> supportTexture;
 #endif
 #elif MODE == MODE_INTERPOLATE
-texture<float2, 3, cudaReadModeElementType> supportTexture;
+// texture<double2, 3, cudaReadModeElementType> supportTexture;
+texture<int4, 3, cudaReadModeElementType> supportTexture;
 #endif
 
 
@@ -278,7 +280,7 @@ __device__ void atomicAdd(float2 *ptr, float2 sum)
 }
 #endif
 
-__device__ void atomicAdd(float2 *ptr, float2 sumXX, float2 sumXY, float2 sumYX, float2 sumYY)
+__device__ void atomicAdd(double2 *ptr, double2 sumXX, double2 sumXY, double2 sumYX, double2 sumYY)
 {
 #if 1
   atomicAdd(&ptr[0].x, sumXX.x);
@@ -307,7 +309,7 @@ __device__ void atomicAdd(float2 *ptr, float2 sumXX, float2 sumXY, float2 sumYX,
 }
 
 
-__device__ void addSupportPixel(float2 &sum, float2 supportPixel, float2 vis)
+__device__ void addSupportPixel(double2 &sum, double2 supportPixel, double2 vis)
 {
   sum.x += supportPixel.x * vis.x;
   sum.y += supportPixel.x * vis.y;
@@ -345,9 +347,9 @@ __device__ void addSupportPixel(float2 &sumXX, float2 &sumXY, float2 &sumYX, flo
 
 __shared__ int4   shared_info[TIMESTEPS][CHANNELS];
 #if MODE == MODE_INTERPOLATE
-__shared__ float2 shared_frac[TIMESTEPS][CHANNELS];
+__shared__ double2 shared_frac[TIMESTEPS][CHANNELS];
 #endif
-__shared__ float2 shared_vis[TIMESTEPS][CHANNELS][POLARIZATIONS];
+__shared__ double2 shared_vis[TIMESTEPS][CHANNELS][POLARIZATIONS];
 
 
 __device__ void loadIntoSharedMem(const VisibilitiesType visibilities,
@@ -360,16 +362,16 @@ __device__ void loadIntoSharedMem(const VisibilitiesType visibilities,
 
   for (unsigned ch = threadIdx.x; ch < CHANNELS * TIMESTEPS; ch += blockDim.x) {
 //__prof_trigger(1);
-    float3   coords = uvw[bl][0][ch];
+    double3   coords = uvw[bl][0][ch];
 
 #if MODE == MODE_SIMPLE
-    unsigned u_int  = __float2int_rn(coords.x);
-    unsigned v_int  = __float2int_rn(coords.y);
+    unsigned u_int  = __double2int_rn(coords.x);
+    unsigned v_int  = __double2int_rn(coords.y);
 #else
-    unsigned u_int  = __float2int_rz(coords.x);
-    unsigned v_int  = __float2int_rz(coords.y);
-    float    u_frac = coords.x - u_int;
-    float    v_frac = coords.y - v_int;
+    unsigned u_int  = __double2int_rz(coords.x);
+    unsigned v_int  = __double2int_rz(coords.y);
+    double    u_frac = coords.x - u_int;
+    double    v_frac = coords.y - v_int;
 #endif
 
 #if MODE == MODE_SIMPLE
@@ -383,13 +385,13 @@ __device__ void loadIntoSharedMem(const VisibilitiesType visibilities,
     shared_info[0][ch] = make_int4(-u_int % supportSize.x, -v_int % supportSize.y, uv_frac_w_offset, u_int + GRID_U * v_int);
 #elif MODE == MODE_INTERPOLATE
     supportSize.x += 1, supportSize.y += 1;
-    shared_info[0][ch] = make_int4(-u_int % supportSize.x, -v_int % supportSize.y, __float_as_int(coords.z + .5f), u_int + GRID_U * v_int);
-    shared_frac[0][ch] = make_float2(u_frac, v_frac);
+    shared_info[0][ch] = make_int4(-u_int % supportSize.x, -v_int % supportSize.y, __double_as_int(coords.z + .5f), u_int + GRID_U * v_int);
+    shared_frac[0][ch] = make_double2(u_frac, v_frac);
 #endif
   }
 
   for (unsigned i = threadIdx.x; i < CHANNELS * TIMESTEPS * POLARIZATIONS / 2; i += blockDim.x)
-    ((float4 *) shared_vis)[i] = ((float4 *) visibilities[bl])[i];
+    ((double4 *) shared_vis)[i] = ((double4 *) visibilities[bl])[i];
 }
 
 
@@ -405,8 +407,8 @@ __device__ void convolve(GridType grid,
   uint2  supportSize = supportPixelsUsed[bl];
 #elif MODE == MODE_INTERPOLATE
   uint2  supportSize = make_uint2(supportPixelsUsed[bl].x + 1, supportPixelsUsed[bl].y + 1);
-  float2 scale       = make_float2((float) SUPPORT_U / (supportSize.x - 1), (float) SUPPORT_V / (supportSize.y - 1));
-  float2 offset      = make_float2(scale.x *.5f + 1.f, scale.y *.5f + 1.f);
+  double2 scale       = make_double2((double) SUPPORT_U / (supportSize.x - 1), (double) SUPPORT_V / (supportSize.y - 1));
+  double2 offset      = make_double2(scale.x *.5f + 1.f, scale.y *.5f + 1.f);
 #endif
 
   /*if (threadIdx.x < optimalNrThreads)*/ {
@@ -421,10 +423,10 @@ __device__ void convolve(GridType grid,
       int box_v = (i / supportSize.x + 2) % supportSize.y - supportSize.y;
 #endif
 
-      float2 sumXX = make_float2(0, 0);
-      float2 sumXY = make_float2(0, 0);
-      float2 sumYX = make_float2(0, 0);
-      float2 sumYY = make_float2(0, 0);
+      double2 sumXX = make_double2(0, 0);
+      double2 sumXY = make_double2(0, 0);
+      double2 sumYX = make_double2(0, 0);
+      double2 sumYY = make_double2(0, 0);
 
       unsigned grid_point = threadIdx.x;
 
@@ -462,17 +464,17 @@ __device__ void convolve(GridType grid,
 #endif
 
 #if defined USE_TEXTURE
-          float2 supportPixel = tex1Dfetch(supportTexture, supportIndex);
+          double2 supportPixel = fetch_double2(supportTexture, supportIndex);
 #else
-          float2 supportPixel = support[0][0][0][0][supportIndex];
+          double2 supportPixel = support[0][0][0][0][supportIndex];
 #endif
 
 #elif MODE == MODE_INTERPOLATE
-          float u_frac = shared_frac[0][ch].x;
-          float v_frac = shared_frac[0][ch].y;
+          double u_frac = shared_frac[0][ch].x;
+          double v_frac = shared_frac[0][ch].y;
 
-          float index_u = scale.x * (my_support_u - u_frac) + offset.x;
-          float index_v = scale.y * (my_support_v - v_frac) + offset.y;
+          double index_u = scale.x * (my_support_u - u_frac) + offset.x;
+          double index_v = scale.y * (my_support_v - v_frac) + offset.y;
 
 #if defined USE_SYMMETRY
           if (index_u >= SUPPORT_U / 2)
@@ -482,7 +484,7 @@ __device__ void convolve(GridType grid,
             index_v = 2.f + SUPPORT_V - index_v;
 #endif
 
-          float2 supportPixel = tex3D(supportTexture, index_u, index_v, __int_as_float(info.z));
+          double2 supportPixel = tex3D(supportTexture, index_u, index_v, __int_as_double(info.z));
 #endif
 
           unsigned new_grid_point = my_support_u + GRID_U * my_support_v + info.w;
@@ -491,10 +493,10 @@ __device__ void convolve(GridType grid,
 //__prof_trigger(4);
             atomicAdd(&grid[0][grid_point][0], sumXX, sumXY, sumYX, sumYY);
 
-            sumXX = make_float2(0, 0);
-            sumXY = make_float2(0, 0);
-            sumYX = make_float2(0, 0);
-            sumYY = make_float2(0, 0);
+            sumXX = make_double2(0, 0);
+            sumXY = make_double2(0, 0);
+            sumYX = make_double2(0, 0);
+            sumYY = make_double2(0, 0);
 
             grid_point = new_grid_point;
           }
@@ -550,33 +552,33 @@ __global__ void degrid(const GridType grid,
   uint2    supportSize = supportPixelsUsed[bl];
 
   for (unsigned ch = threadIdx.x; ch < CHANNELS * TIMESTEPS; ch += blockDim.x) {
-    float2 sumXX = make_float2(0, 0);
-    float2 sumXY = make_float2(0, 0);
-    float2 sumYX = make_float2(0, 0);
-    float2 sumYY = make_float2(0, 0);
+    double2 sumXX = make_double2(0, 0);
+    double2 sumXY = make_double2(0, 0);
+    double2 sumYX = make_double2(0, 0);
+    double2 sumYY = make_double2(0, 0);
 
-    float grid_u = uvw[bl][0][ch].x;
-    float grid_v = uvw[bl][0][ch].y;
+    double grid_u = uvw[bl][0][ch].x;
+    double grid_v = uvw[bl][0][ch].y;
 
 #if MODE == MODE_SIMPLE
-    unsigned u_int  = __float2uint_rn(grid_u), v_int = __float2uint_rn(grid_v);
+    unsigned u_int  = __double2uint_rn(grid_u), v_int = __double2uint_rn(grid_v);
 #elif MODE == MODE_OVERSAMPLE
     unsigned u_int  = (unsigned) grid_u, v_int = (unsigned) grid_v;
     unsigned w_int  = (unsigned) uvw[bl][0][ch].z;
-    float    u_frac = grid_u - u_int;
-    float    v_frac = grid_v - v_int;
+    double    u_frac = grid_u - u_int;
+    double    v_frac = grid_v - v_int;
     unsigned u_os   = SUPPORT_U * (unsigned) (OVERSAMPLE_U * u_frac);
     unsigned v_os   = SUPPORT_V * (unsigned) (OVERSAMPLE_V * v_frac);
 #endif
 
     for (unsigned v = 0; v < supportSize.y; v ++) {
-      const float2 *gridPtr = grid[v_int + v][u_int];
+      const double2 *gridPtr = grid[v_int + v][u_int];
 
       for (unsigned u = 0; u < supportSize.x; u ++, gridPtr += POLARIZATIONS) {
 #if MODE == MODE_SIMPLE
-        float2 supportPixel = tex2D(supportTexture, u, v);
+        double2 supportPixel = tex2D(supportTexture, u, v);
 #elif MODE == MODE_OVERSAMPLE
-        float2 supportPixel = tex3D(supportTexture, u + u_os, v + v_os, w_int);
+        double2 supportPixel = tex3D(supportTexture, u + u_os, v + v_os, w_int);
 #endif
 
         addSupportPixel(sumXX, supportPixel, gridPtr[0]);
@@ -597,9 +599,9 @@ __global__ void degrid(const GridType grid,
 #endif // defined CUDA
 
 
-void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const float frequencies[CHANNELS], unsigned block)
+void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const double frequencies[CHANNELS], unsigned block)
 {
-  float scale_u[CHANNELS], scale_v[CHANNELS], scale_w[CHANNELS];
+  double scale_u[CHANNELS], scale_v[CHANNELS], scale_w[CHANNELS];
 
   for (unsigned ch = 0; ch < CHANNELS; ch ++) {
     scale_u[ch] = frequencies[ch] / (CELL_SIZE_U * SPEED_OF_LIGHT);
@@ -629,7 +631,7 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const float freque
       double angle = 2 * M_PI * ((block * TIMESTEPS + time) / 86400.0 + phi);
 
       for (unsigned ch = 0; ch < CHANNELS; ch ++) {
-        uvw[bl][time][ch] = make_float3(
+        uvw[bl][time][ch] = make_double3(
 #if 0
           r * cos(angle) * scale_u[ch] + GRID_U / 2.0 - supportPixelsUsed[bl].x / 2.0,
           r * sin(angle) * scale_v[ch] + GRID_V / 2.0 - supportPixelsUsed[bl].y / 2.0,
@@ -663,10 +665,10 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const float freque
       for (unsigned ch = 0; ch < CHANNELS; ch ++) {
         const double *currentUVW = realUVW[block * TIMESTEPS + time][mappedBaseline];
 
-        uvw[bl][time][ch] = make_float3(
-          scale_u[ch] * (float) currentUVW[0] + GRID_U / 2.0f - supportPixelsUsed[bl].x / 2.0f,
-          scale_v[ch] * (float) currentUVW[1] + GRID_V / 2.0f - supportPixelsUsed[bl].y / 2.0f,
-          scale_w[ch] * (float) currentUVW[2] + W_PLANES / 2.0f
+        uvw[bl][time][ch] = make_double3(
+          scale_u[ch] * (double) currentUVW[0] + GRID_U / 2.0f - supportPixelsUsed[bl].x / 2.0f,
+          scale_v[ch] * (double) currentUVW[1] + GRID_V / 2.0f - supportPixelsUsed[bl].y / 2.0f,
+          scale_w[ch] * (double) currentUVW[2] + W_PLANES / 2.0f
         );
 
         //if (ch == 0) std::cout << "bl = " << bl << ", t = " << time << ", ch = " << ch << ", uvw = " << uvw[bl][time][ch].x << ", " << uvw[bl][time][ch].y << ", " << uvw[bl][time][ch].z << ", r = " << sqrt(pow(scale_u[ch] * currentUVW[0], 2) + pow(scale_v[ch] * currentUVW[1], 2)) << std::endl;
@@ -691,7 +693,7 @@ void initSupport(SupportType support)
 #if MODE == MODE_SIMPLE
   for (int v = 0; v < SUPPORT_V; v ++)
     for (int u = 0; u < SUPPORT_U; u ++)
-      support[v][u] = make_float2(std::min(v + 1, SUPPORT_V - v) * std::min(u + 1, SUPPORT_U - u), 0);
+      support[v][u] = make_double2(std::min(v + 1, SUPPORT_V - v) * std::min(u + 1, SUPPORT_U - u), 0);
 #elif MODE == MODE_OVERSAMPLE
 #if ORDER == ORDER_W_OV_OU_V_U
   for (int w = 0; w < W_PLANES; w ++)
@@ -699,7 +701,7 @@ void initSupport(SupportType support)
       for (int ov = 0; ov < OVERSAMPLE_V; ov ++)
         for (int v = 0; v < SUPPORT_V; v ++)
           for (int u = 0; u < SUPPORT_U; u ++)
-            support[w][ov][ou][v][u] = make_float2(
+            support[w][ov][ou][v][u] = make_double2(
               (w + 1) * (std::min)(v + 1, SUPPORT_V - v) * (std::min)(u + 1, SUPPORT_U - u),
               (w + 1) * (ov + 1) * (ou + 1));
 #elif ORDER == ORDER_W_V_OV_U_OU
@@ -708,7 +710,7 @@ void initSupport(SupportType support)
       for (int ov = 0; ov < OVERSAMPLE_V; ov ++)
         for (int u = 0; u < SUPPORT_U; u ++)
           for (int ou = 0; ou < OVERSAMPLE_U; ou ++)
-            support[w][v][ov][u][ou] = make_float2(
+            support[w][v][ov][u][ou] = make_double2(
               (w + 1) * std::min(v + 1, SUPPORT_V - v) * std::min(u + 1, SUPPORT_U - u),
               (w + 1) * (ov + 1) * (ou + 1));
 #endif
@@ -716,23 +718,23 @@ void initSupport(SupportType support)
   for (int w = 0; w < W_PLANES; w ++) {
     for (int v = 1; v < SUPPORT_V + 1; v ++) {
       for (int u = 1; u < SUPPORT_U + 1; u ++) {
-        support[w][v][u] = make_float2(w * (std::min(v, SUPPORT_V + 1 - v) * std::min(u, SUPPORT_U + 1 - u)) / (float) (W_PLANES * (SUPPORT_V + 1) * (SUPPORT_U + 1) / 4) , 0);
+        support[w][v][u] = make_double2(w * (std::min(v, SUPPORT_V + 1 - v) * std::min(u, SUPPORT_U + 1 - u)) / (double) (W_PLANES * (SUPPORT_V + 1) * (SUPPORT_U + 1) / 4) , 0);
       }
 
-      support[w][v][0] = make_float2(0, 0);
-      support[w][v][SUPPORT_U + 1] = make_float2(0, 0);
+      support[w][v][0] = make_double2(0, 0);
+      support[w][v][SUPPORT_U + 1] = make_double2(0, 0);
     }
 
     for (int u = 0; u < SUPPORT_U + 2; u ++) {
-      support[w][0][u] = make_float2(0, 0);
-      support[w][SUPPORT_V + 1][u] = make_float2(0, 0);
+      support[w][0][u] = make_double2(0, 0);
+      support[w][SUPPORT_V + 1][u] = make_double2(0, 0);
     }
   }
 #endif
 }
 
 
-void initFrequencies(float frequencies[CHANNELS])
+void initFrequencies(double frequencies[CHANNELS])
 {
   for (unsigned ch = 0; ch < CHANNELS; ch ++)
     frequencies[ch] = 59908828.7353515625 + 12207.03125 * ch;
@@ -748,7 +750,7 @@ void initVisibilities(VisibilitiesType visibilities)
         for (unsigned pol = 0; pol < POLARIZATIONS; pol ++)
           visibilities[bl][time][ch][pol] = make_float2(2.0f, 1.0f);
 #else
-  float2 vis = make_float2(2.0f, 1.0f);
+  double2 vis = make_double2(2.0f, 1.0f);
 
 //#pragma omp parallel for num_threads(4)
   for (unsigned i = 0; i < BASELINES * TIMESTEPS * CHANNELS * POLARIZATIONS; i ++)
@@ -872,7 +874,7 @@ void initSupportOnHostAndDevice(SharedObject<SupportType> &support)
 
 void initSupportOnHostAndDevice(SupportType *&hostSupport, cudaArray *&devSupport)
 {
-  cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float2>();
+  cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<double2>();
 
   checkCudaCall(cudaHostAlloc(reinterpret_cast<void **>(&hostSupport), sizeof *hostSupport, 0));
   initSupport(*hostSupport);
@@ -880,7 +882,7 @@ void initSupportOnHostAndDevice(SupportType *&hostSupport, cudaArray *&devSuppor
 #if MODE == MODE_SIMPLE
   //checkCudaCall(cudaMallocArray(&devSupport, &channelDesc, SUPPORT_U, SUPPORT_V));
 
-  //checkCudaCall(cudaMemcpyToArray(devSupport, 0, 0, *hostSupport, SUPPORT_U * SUPPORT_V * sizeof(float2), cudaMemcpyHostToDevice));
+  //checkCudaCall(cudaMemcpyToArray(devSupport, 0, 0, *hostSupport, SUPPORT_U * SUPPORT_V * sizeof(double2), cudaMemcpyHostToDevice));
 
 
   //supportTexture.filterMode     = cudaFilterModePoint;
@@ -889,7 +891,7 @@ void initSupportOnHostAndDevice(SupportType *&hostSupport, cudaArray *&devSuppor
   //checkCudaCall(cudaMalloc3DArray(&devSupport, &channelDesc, supportExtent));
 
   //cudaMemcpy3DParms copyParams = {0};
-  //copyParams.srcPtr   = make_cudaPitchedPtr(*hostSupport, SUPPORT_U * SUPPORT_V * sizeof(float2), SUPPORT_U * SUPPORT_V, OVERSAMPLE_U * OVERSAMPLE_V);
+  //copyParams.srcPtr   = make_cudaPitchedPtr(*hostSupport, SUPPORT_U * SUPPORT_V * sizeof(double2), SUPPORT_U * SUPPORT_V, OVERSAMPLE_U * OVERSAMPLE_V);
   //copyParams.dstArray = devSupport;
   //copyParams.extent   = supportExtent;
   //copyParams.kind     = cudaMemcpyHostToDevice;
@@ -901,7 +903,7 @@ void initSupportOnHostAndDevice(SupportType *&hostSupport, cudaArray *&devSuppor
   checkCudaCall(cudaMalloc3DArray(&devSupport, &channelDesc, supportExtent));
 
   cudaMemcpy3DParms copyParams = {0};
-  copyParams.srcPtr     = make_cudaPitchedPtr(*hostSupport, (SUPPORT_U + 2) * sizeof(float2), SUPPORT_U + 2, SUPPORT_V + 2);
+  copyParams.srcPtr     = make_cudaPitchedPtr(*hostSupport, (SUPPORT_U + 2) * sizeof(double2), SUPPORT_U + 2, SUPPORT_V + 2);
   copyParams.dstArray   = devSupport;
   copyParams.extent     = supportExtent;
   copyParams.kind       = cudaMemcpyHostToDevice;
@@ -957,7 +959,7 @@ void doCuda()
   initSupportOnHostAndDevice(hostSupport, devSupport);
 #endif
 
-  float frequencies[CHANNELS];
+  double frequencies[CHANNELS];
   initFrequencies(frequencies);
 
 #if defined DEGRIDDING
@@ -978,7 +980,7 @@ void doCuda()
     nrThreads = atoi(getenv("NR_THREADS"));
 
   double start = getTime();
-  float  totalExecutionTime = 0;
+  double  totalExecutionTime = 0;
 
 //#pragma omp parallel num_threads(STREAMS)
   {
@@ -1235,7 +1237,7 @@ void doOpenCL()
     if (getenv("NR_GPUS") != 0)
       devices.resize((std::min)(devices.size(), (size_t) atoi(getenv("NR_GPUS"))));
 
-    float frequencies[CHANNELS];
+    double frequencies[CHANNELS];
     initFrequencies(frequencies);
 
 #if defined ENABLE_PROFILING
@@ -1248,7 +1250,7 @@ void doOpenCL()
     static SupportType supportHost;
     initSupport(supportHost);
 
-    cl::ImageFormat format(CL_RG, CL_FLOAT);
+    cl::ImageFormat format(CL_RG, CL_double);
     cl::size_t<3> origin, region;
     origin[0] = 0;
     origin[1] = 0;
@@ -1442,8 +1444,8 @@ void doCPUgridding(GridType grid[],
 #pragma omp for schedule(dynamic)
     for (int bl = 0; bl < BASELINES; bl ++) {
       for (unsigned v = 0; v <= supportPixelsUsed[bl].x; v ++) {
-        float scale_u = (float) SUPPORT_U / supportPixelsUsed[bl].x;
-        float scale_v = (float) SUPPORT_V / supportPixelsUsed[bl].y;
+        double scale_u = (double) SUPPORT_U / supportPixelsUsed[bl].x;
+        double scale_v = (double) SUPPORT_V / supportPixelsUsed[bl].y;
 
         /*for (unsigned time = 0; time < TIMESTEPS; time ++)*/ {
           for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
@@ -1452,41 +1454,41 @@ void doCPUgridding(GridType grid[],
             float grid_v = nearbyintf(256.f * uvw[bl][0][ch].y) / 256.0f;
             float w      = nearbyintf(256.f * uvw[bl][0][ch].z) / 256.0f;
 #else
-            float grid_u = uvw[bl][0][ch].x;
-            float grid_v = uvw[bl][0][ch].y;
-            float w      = uvw[bl][0][ch].z;
+            double grid_u = uvw[bl][0][ch].x;
+            double grid_v = uvw[bl][0][ch].y;
+            double w      = uvw[bl][0][ch].z;
 #endif
 
             unsigned grid_u_int  = (unsigned) nearbyintf(grid_u);
-            float    grid_u_frac = grid_u - grid_u_int;
+            double    grid_u_frac = grid_u - grid_u_int;
             unsigned grid_v_int  = (unsigned) nearbyintf(grid_v);
-            float    grid_v_frac = grid_v - grid_v_int;
+            double    grid_v_frac = grid_v - grid_v_int;
 
 #if defined __AVX__
-            __m256 vis = _mm256_load_ps((const float *) &visibilities[bl][0][ch][0]);
+            __m256 vis = _mm256_load_ps((const double *) &visibilities[bl][0][ch][0]);
             __m256 *gridptr = (__m256 *) &(*localGrid)[grid_v_int + v][grid_u_int][0];
 #endif
 
-            float    support_v = .5f + scale_v * (v - grid_v_frac + .5f);
+            double    support_v = .5f + scale_v * (v - grid_v_frac + .5f);
             unsigned support_v_int = (unsigned) support_v;
-            float    v1 = support_v - support_v_int;
-            float    v0 = 1 - v1;
+            double    v1 = support_v - support_v_int;
+            double    v0 = 1 - v1;
             unsigned support_w_int = (unsigned) w;
-            float    w1 = w - support_w_int;
-            float    w0 = 1 - w1;
+            double    w1 = w - support_w_int;
+            double    w0 = 1 - w1;
 
-            float vw00 = v0 * w0;
-            float vw10 = v1 * w0;
-            float vw01 = v0 * w1;
-            float vw11 = v1 * w1;
+            double vw00 = v0 * w0;
+            double vw10 = v1 * w0;
+            double vw01 = v0 * w1;
+            double vw11 = v1 * w1;
 
             for (unsigned u = 0; u <= supportPixelsUsed[bl].y; u ++) {
-              float    support_u = .5f + scale_u * (u - grid_u_frac + .5f);
+              double    support_u = .5f + scale_u * (u - grid_u_frac + .5f);
               unsigned support_u_int = (unsigned) support_u;
-              float    u1 = support_u - support_u_int;
-              float    u0 = 1 - u1;
+              double    u1 = support_u - support_u_int;
+              double    u0 = 1 - u1;
 
-              float2 weight = u0 * (vw00 * support[support_w_int    ][support_v_int    ][support_u_int    ] +
+              double2 weight = u0 * (vw00 * support[support_w_int    ][support_v_int    ][support_u_int    ] +
                                     vw01 * support[support_w_int    ][support_v_int + 1][support_u_int    ] +
                                     vw10 * support[support_w_int + 1][support_v_int    ][support_u_int    ] +
                                     vw11 * support[support_w_int + 1][support_v_int + 1][support_u_int    ]) +
@@ -1509,7 +1511,7 @@ void doCPUgridding(GridType grid[],
               //__m256 sup1 =_mm256_insertf128_ps((__m256) sup01, sup11, 1);
 #endif
 
-
+              // FIXME: Float -> Double
               __m256 weight_r = _mm256_set1_ps(weight.x);
               __m256 weight_i = _mm256_set1_ps(weight.y);
               __m256 t7 = _mm256_mul_ps(weight_r, vis);
@@ -1519,8 +1521,8 @@ void doCPUgridding(GridType grid[],
               gridptr[u] = _mm256_add_ps(gridptr[u], t9);
 #else
               for (unsigned pol = 0; pol < POLARIZATIONS; pol ++) {
-                float2 prod   = visibilities[bl][0][ch][pol] * weight;
-                float2 &pixel = (*localGrid)[grid_v_int + v][grid_u_int + u][pol];
+                double2 prod   = visibilities[bl][0][ch][pol] * weight;
+                double2 &pixel = (*localGrid)[grid_v_int + v][grid_u_int + u][pol];
                 pixel += prod;
               }
 #endif
@@ -1537,25 +1539,26 @@ void doCPUgridding(GridType grid[],
       for (unsigned v = 0; v < v_end; v ++) {
         /*for (unsigned time = 0; time < TIMESTEPS; time ++)*/ {
           for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
-            float uc = uvw[bl][0][ch].x;
-            float vc = uvw[bl][0][ch].y;
+            double uc = uvw[bl][0][ch].x;
+            double vc = uvw[bl][0][ch].y;
             unsigned wc = (unsigned) uvw[bl][0][ch].z;
             unsigned grid_u = (unsigned) uc;
             unsigned grid_v = (unsigned) vc;
-            float          u_frac = uc - grid_u;
-            float          v_frac = vc - grid_v;
+            double          u_frac = uc - grid_u;
+            double          v_frac = vc - grid_v;
             unsigned ou     = (unsigned) (OVERSAMPLE_U * u_frac);
             unsigned ov     = (unsigned) (OVERSAMPLE_V * v_frac);
             unsigned u_end  = supportPixelsUsed[bl].x;
 
 #if defined __AVX__
-            __m256 vis = _mm256_load_ps((const float *) &visibilities[bl][0][ch][0]);
+            // FIXME: Float -> Double
+            __m256 vis = _mm256_load_ps((const double *) &visibilities[bl][0][ch][0]);
             __m256 *gridptr = (__m256 *) &(*localGrid)[grid_v + v][grid_u][0];
 
 #if ORDER == ORDER_W_OV_OU_V_U
-            float2 *support_ptr = &support[wc][ov][ou][v][0];
+            double2 *support_ptr = &support[wc][ov][ou][v][0];
 #elif ORDER == ORDER_W_V_OV_U_OU
-            float2 *support_ptr = &support[w][v][ov][0][ou];
+            double2 *support_ptr = &support[w][v][ov][0][ou];
 #endif
             for (unsigned u = 0; u < u_end; u ++) {
 #if ORDER == ORDER_W_OV_OU_V_U
@@ -1572,14 +1575,15 @@ void doCPUgridding(GridType grid[],
               gridptr[u] = _mm256_add_ps(gridptr[u], t9);
             }
 #elif defined __SSE3__
-            __m128 vis0 = _mm_load_ps((const float *) &visibilities[bl][0][ch][0]);
-            __m128 vis1 = _mm_load_ps((const float *) &visibilities[bl][0][ch][2]);
+            // FIXME: Float -> Double
+            __m128 vis0 = _mm_load_ps((const double *) &visibilities[bl][0][ch][0]);
+            __m128 vis1 = _mm_load_ps((const double *) &visibilities[bl][0][ch][2]);
             __m128 *gridptr = (__m128 *) &(*localGrid)[grid_v + v][grid_u][0];
 
 #if ORDER == ORDER_W_OV_OU_V_U
-            float2 *support_ptr = &support[wc][ov][ou][v][0];
+            double2 *support_ptr = &support[wc][ov][ou][v][0];
 #elif ORDER == ORDER_W_V_OV_U_OU
-            float2 *support_ptr = &support[w][v][ov][0][ou];
+            double2 *support_ptr = &support[w][v][ov][0][ou];
 #endif
             for (unsigned u = 0; u < u_end; u ++) {
 #if ORDER == ORDER_W_OV_OU_V_U
@@ -1601,16 +1605,16 @@ void doCPUgridding(GridType grid[],
               gridptr[2 * u + 1] = _mm_add_ps(gridptr[2 * u + 1], t91);
             }
 #else
-            float2 visXX = visibilities[bl][0][ch][0];
-            float2 visXY = visibilities[bl][0][ch][1];
-            float2 visYX = visibilities[bl][0][ch][2];
-            float2 visYY = visibilities[bl][0][ch][3];
+            double2 visXX = visibilities[bl][0][ch][0];
+            double2 visXY = visibilities[bl][0][ch][1];
+            double2 visYX = visibilities[bl][0][ch][2];
+            double2 visYY = visibilities[bl][0][ch][3];
 
             for (unsigned u = 0; u < u_end; u ++) {
 #if ORDER == ORDER_W_OV_OU_V_U
-              float2 weight = support[wc][ov][ou][v][u];
+              double2 weight = support[wc][ov][ou][v][u];
 #elif ORDER == ORDER_W_V_OV_U_OU
-              float2 weight = support[wc][v][ov][u][ou];
+              double2 weight = support[wc][v][ov][u][ou];
 #endif
               (*localGrid)[grid_v + v][grid_u + u][0] += visXX * weight;
               (*localGrid)[grid_v + v][grid_u + u][1] += visXY * weight;
@@ -1635,11 +1639,11 @@ void doCPUgridding(GridType grid[],
 
           for (unsigned v = 0; v < v_end; v ++) {
             for (unsigned u = 0; u < u_end; u ++) {
-              float2 weight = support[v][u];
+              double2 weight = support[v][u];
 
               for (unsigned pol = 0; pol < POLARIZATIONS; pol ++) {
-                float2 prod   = visibilities[bl][0][ch][pol] * weight;
-                float2 &pixel = (*localGrid)[grid_v + v][grid_u + u][pol];
+                double2 prod   = visibilities[bl][0][ch][pol] * weight;
+                double2 &pixel = (*localGrid)[grid_v + v][grid_u + u][pol];
                 pixel += prod;
               }
             }
@@ -1666,23 +1670,23 @@ void doCPUdegridding(GridType grid,
 
     /*for (unsigned time = 0; time < TIMESTEPS; time ++)*/ {
       for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
-        float2   sumXX  = make_float2(0, 0);
-        float2   sumXY  = make_float2(0, 0);
-        float2   sumYX  = make_float2(0, 0);
-        float2   sumYY  = make_float2(0, 0);
+        double2   sumXX  = make_double2(0, 0);
+        double2   sumXY  = make_double2(0, 0);
+        double2   sumYX  = make_double2(0, 0);
+        double2   sumYY  = make_double2(0, 0);
 
 #if MODE == MODE_SIMPLE
         unsigned u_int = (unsigned) nearbyintf(uvw[bl][0][ch].x);
         unsigned v_int = (unsigned) nearbyintf(uvw[bl][0][ch].y);
 #elif MODE == MODE_OVERSAMPLE
-        float    grid_u = uvw[bl][0][ch].x;
-        float    grid_v = uvw[bl][0][ch].y;
-        float    grid_w = uvw[bl][0][ch].z;
+        double    grid_u = uvw[bl][0][ch].x;
+        double    grid_v = uvw[bl][0][ch].y;
+        double    grid_w = uvw[bl][0][ch].z;
         unsigned u_int  = (unsigned) grid_u;
         unsigned v_int  = (unsigned) grid_v;
         unsigned w_int  = (unsigned) grid_w;
-        float    u_frac = grid_u - u_int;
-        float    v_frac = grid_v - v_int;
+        double    u_frac = grid_u - u_int;
+        double    v_frac = grid_v - v_int;
         unsigned ou     = (unsigned) (OVERSAMPLE_U * u_frac);
         unsigned ov     = (unsigned) (OVERSAMPLE_V * v_frac);
 #endif
@@ -1690,12 +1694,12 @@ void doCPUdegridding(GridType grid,
         for (unsigned v = 0; v < supportSize.y; v ++) {
           for (unsigned u = 0; u < supportSize.x; u ++) {
 #if MODE == MODE_SIMPLE
-            float2 weight = support[v][u];
+            double2 weight = support[v][u];
 #elif MODE == MODE_OVERSAMPLE
 #if ORDER == ORDER_W_OV_OU_V_U
-            float2 weight = support[w_int][ov][ou][v][u];
+            double2 weight = support[w_int][ov][ou][v][u];
 #elif ORDER == ORDER_W_V_OV_U_OU
-            float2 weight = support[w_int][v][ov][u][ou];
+            double2 weight = support[w_int][v][ov][u][ou];
 #endif
 #endif
             sumXX += grid[v_int + v][u_int + u][0] * weight;
@@ -1723,7 +1727,7 @@ void doCPU()
   SupportType *support = (SupportType *) new SupportType;
   static VisibilitiesType visibilities;
   static UVWtype uvw;
-  static float  frequencies[CHANNELS];
+  static double  frequencies[CHANNELS];
   static uint2  supportPixelsUsed[BASELINES];
 
   memset(grid, 0, sizeof grid);
@@ -1743,7 +1747,7 @@ void doCPU()
 
   for (unsigned block = 0; block < BLOCKS; block ++) {
 #if defined DEGRIDDING
-    grid[2000][2000][0] = make_float2(1.0f, 0.0f);
+    grid[2000][2000][0] = make_double2(1.0f, 0.0f);
 #else
     initVisibilities(visibilities /*, block */);
 #endif

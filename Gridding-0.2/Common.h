@@ -53,6 +53,30 @@
 
 
 #if defined __CUDA__
+// Borrowed from CUDA C Programming guide
+
+__device__ double atomicAdd(double* address, double val)
+{
+  unsigned long long int* address_as_ull = (unsigned long long int*)address;
+  unsigned long long int old = *address_as_ull, assumed;
+  do {
+       assumed = old;
+       old = atomicCAS(address_as_ull, assumed,
+                         __double_as_longlong(val +
+                           __longlong_as_double(assumed)));
+       // Note: uses integer comparison to avoid hang in case of NaN (since NaN != NaN)
+  } while (assumed != old);
+  return __longlong_as_double(old);
+}
+
+static __forceinline__ __device__ double2 fetch_double2(texture<int4, cudaTextureType1D, cudaReadModeElementType> t, int i)
+{
+  int4 v = tex1Dfetch(t, i);
+  return make_double2(__hiloint2double(v.y, v.x), __hiloint2double(v.w, v.z));
+}
+#endif
+
+#if defined __CUDA__
 #elif 0 && defined __OPENCL__
 
 typedef cl_double2 double2;
@@ -95,11 +119,13 @@ inline double2 make_double2(double x, double y)
 
 typedef struct { float x, y; } float2;
 typedef struct { float x, y, z; } float3;
+typedef struct { double x, y, z; } double3;
 typedef struct { double x, y; } double2;
 typedef struct { unsigned x, y; } uint2;
 
 inline float2 make_float2(float x, float y) { float2 f = { x, y }; return f; }
 inline float3 make_float3(float x, float y, float z) { float3 f = { x, y, z}; return f; }
+inline double3 make_double3(double x, double y, double z) { double3 f = { x, y, z}; return f; }
 inline double2 make_double2(double x, double y) { double2 f = { x, y }; return f; }
 inline uint2 make_uint2(unsigned x, unsigned y) { uint2 f = { x, y }; return f; }
 
@@ -156,6 +182,12 @@ inline float2 operator * (float2 a, float2 b)
 }
 
 
+inline double2 operator * (double2 a, double2 b)
+{
+  return make_double2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+}
+
+
 inline float2 operator += (float2 &a, float2 b)
 {
   return make_float2(a.x += b.x, a.y += b.y);
@@ -163,6 +195,12 @@ inline float2 operator += (float2 &a, float2 b)
 
 
 inline double2 operator += (double2 &a, float2 b)
+{
+  return make_double2(a.x += b.x, a.y += b.y);
+}
+
+
+inline double2 operator += (double2 &a, double2 b)
 {
   return make_double2(a.x += b.x, a.y += b.y);
 }
