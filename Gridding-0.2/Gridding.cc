@@ -106,12 +106,12 @@ void addGrids(GridType a, const GridType b[])
   for (int v = 0; v < GRID_V; v ++)
     for (unsigned u = 0; u < GRID_U; u ++)
       for (unsigned pol = 0; pol < POLARIZATIONS; pol ++) {
-	float2 sum = b[0][v][u][pol];
+        float2 sum = b[0][v][u][pol];
 
-	for (unsigned g = 1; g < nrThreads; g ++)
-	  sum += b[g][v][u][pol];
+        for (unsigned g = 1; g < nrThreads; g ++)
+          sum += b[g][v][u][pol];
 
-	a[v][u][pol] += sum;
+        a[v][u][pol] += sum;
       }
 #endif
 }
@@ -122,53 +122,53 @@ void addGrids(GridType a, const GridType b[])
 const char *errorMessage(cl::Error &error)
 {
   switch (error.err()) {
-    case CL_SUCCESS:				return "Success!";
-    case CL_DEVICE_NOT_FOUND:			return "Device not found.";
-    case CL_DEVICE_NOT_AVAILABLE:		return "Device not available";
-    case CL_COMPILER_NOT_AVAILABLE:		return "Compiler not available";
-    case CL_MEM_OBJECT_ALLOCATION_FAILURE:	return "Memory object allocation failure";
-    case CL_OUT_OF_RESOURCES:			return "Out of resources";
-    case CL_OUT_OF_HOST_MEMORY:			return "Out of host memory";
-    case CL_PROFILING_INFO_NOT_AVAILABLE:	return "Profiling information not available";
-    case CL_MEM_COPY_OVERLAP:			return "Memory copy overlap";
-    case CL_IMAGE_FORMAT_MISMATCH:		return "Image format mismatch";
-    case CL_IMAGE_FORMAT_NOT_SUPPORTED:		return "Image format not supported";
-    case CL_BUILD_PROGRAM_FAILURE:		return "Program build failure";
-    case CL_MAP_FAILURE:			return "Map failure";
-    case CL_INVALID_VALUE:			return "Invalid value";
-    case CL_INVALID_DEVICE_TYPE:		return "Invalid device type";
-    case CL_INVALID_PLATFORM:			return "Invalid platform";
-    case CL_INVALID_DEVICE:			return "Invalid device";
-    case CL_INVALID_CONTEXT:			return "Invalid context";
-    case CL_INVALID_QUEUE_PROPERTIES:		return "Invalid queue properties";
-    case CL_INVALID_COMMAND_QUEUE:		return "Invalid command queue";
-    case CL_INVALID_HOST_PTR:			return "Invalid host pointer";
-    case CL_INVALID_MEM_OBJECT:			return "Invalid memory object";
-    case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR:	return "Invalid image format descriptor";
-    case CL_INVALID_IMAGE_SIZE:			return "Invalid image size";
-    case CL_INVALID_SAMPLER:			return "Invalid sampler";
-    case CL_INVALID_BINARY:			return "Invalid binary";
-    case CL_INVALID_BUILD_OPTIONS:		return "Invalid build options";
-    case CL_INVALID_PROGRAM:			return "Invalid program";
-    case CL_INVALID_PROGRAM_EXECUTABLE:		return "Invalid program executable";
-    case CL_INVALID_KERNEL_NAME:		return "Invalid kernel name";
-    case CL_INVALID_KERNEL_DEFINITION:		return "Invalid kernel definition";
-    case CL_INVALID_KERNEL:			return "Invalid kernel";
-    case CL_INVALID_ARG_INDEX:			return "Invalid argument index";
-    case CL_INVALID_ARG_VALUE:			return "Invalid argument value";
-    case CL_INVALID_ARG_SIZE:			return "Invalid argument size";
-    case CL_INVALID_KERNEL_ARGS:		return "Invalid kernel arguments";
-    case CL_INVALID_WORK_DIMENSION:		return "Invalid work dimension";
-    case CL_INVALID_WORK_GROUP_SIZE:		return "Invalid work group size";
-    case CL_INVALID_WORK_ITEM_SIZE:		return "Invalid work item size";
-    case CL_INVALID_GLOBAL_OFFSET:		return "Invalid global offset";
-    case CL_INVALID_EVENT_WAIT_LIST:		return "Invalid event wait list";
-    case CL_INVALID_EVENT:			return "Invalid event";
-    case CL_INVALID_OPERATION:			return "Invalid operation";
-    case CL_INVALID_GL_OBJECT:			return "Invalid OpenGL object";
-    case CL_INVALID_BUFFER_SIZE:		return "Invalid buffer size";
-    case CL_INVALID_MIP_LEVEL:			return "Invalid mip-map level";
-    default:					return "Unknown";
+    case CL_SUCCESS:                            return "Success!";
+    case CL_DEVICE_NOT_FOUND:                   return "Device not found.";
+    case CL_DEVICE_NOT_AVAILABLE:               return "Device not available";
+    case CL_COMPILER_NOT_AVAILABLE:             return "Compiler not available";
+    case CL_MEM_OBJECT_ALLOCATION_FAILURE:      return "Memory object allocation failure";
+    case CL_OUT_OF_RESOURCES:                   return "Out of resources";
+    case CL_OUT_OF_HOST_MEMORY:                 return "Out of host memory";
+    case CL_PROFILING_INFO_NOT_AVAILABLE:       return "Profiling information not available";
+    case CL_MEM_COPY_OVERLAP:                   return "Memory copy overlap";
+    case CL_IMAGE_FORMAT_MISMATCH:              return "Image format mismatch";
+    case CL_IMAGE_FORMAT_NOT_SUPPORTED:         return "Image format not supported";
+    case CL_BUILD_PROGRAM_FAILURE:              return "Program build failure";
+    case CL_MAP_FAILURE:                        return "Map failure";
+    case CL_INVALID_VALUE:                      return "Invalid value";
+    case CL_INVALID_DEVICE_TYPE:                return "Invalid device type";
+    case CL_INVALID_PLATFORM:                   return "Invalid platform";
+    case CL_INVALID_DEVICE:                     return "Invalid device";
+    case CL_INVALID_CONTEXT:                    return "Invalid context";
+    case CL_INVALID_QUEUE_PROPERTIES:           return "Invalid queue properties";
+    case CL_INVALID_COMMAND_QUEUE:              return "Invalid command queue";
+    case CL_INVALID_HOST_PTR:                   return "Invalid host pointer";
+    case CL_INVALID_MEM_OBJECT:                 return "Invalid memory object";
+    case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR:    return "Invalid image format descriptor";
+    case CL_INVALID_IMAGE_SIZE:                 return "Invalid image size";
+    case CL_INVALID_SAMPLER:                    return "Invalid sampler";
+    case CL_INVALID_BINARY:                     return "Invalid binary";
+    case CL_INVALID_BUILD_OPTIONS:              return "Invalid build options";
+    case CL_INVALID_PROGRAM:                    return "Invalid program";
+    case CL_INVALID_PROGRAM_EXECUTABLE:         return "Invalid program executable";
+    case CL_INVALID_KERNEL_NAME:                return "Invalid kernel name";
+    case CL_INVALID_KERNEL_DEFINITION:          return "Invalid kernel definition";
+    case CL_INVALID_KERNEL:                     return "Invalid kernel";
+    case CL_INVALID_ARG_INDEX:                  return "Invalid argument index";
+    case CL_INVALID_ARG_VALUE:                  return "Invalid argument value";
+    case CL_INVALID_ARG_SIZE:                   return "Invalid argument size";
+    case CL_INVALID_KERNEL_ARGS:                return "Invalid kernel arguments";
+    case CL_INVALID_WORK_DIMENSION:             return "Invalid work dimension";
+    case CL_INVALID_WORK_GROUP_SIZE:            return "Invalid work group size";
+    case CL_INVALID_WORK_ITEM_SIZE:             return "Invalid work item size";
+    case CL_INVALID_GLOBAL_OFFSET:              return "Invalid global offset";
+    case CL_INVALID_EVENT_WAIT_LIST:            return "Invalid event wait list";
+    case CL_INVALID_EVENT:                      return "Invalid event";
+    case CL_INVALID_OPERATION:                  return "Invalid operation";
+    case CL_INVALID_GL_OBJECT:                  return "Invalid OpenGL object";
+    case CL_INVALID_BUFFER_SIZE:                return "Invalid buffer size";
+    case CL_INVALID_MIP_LEVEL:                  return "Invalid mip-map level";
+    default:                                    return "Unknown";
   }
 }
 
@@ -199,7 +199,7 @@ __global__ void computeSupportFunction(SupportType support, float w, float2 cell
   for (int w = 0; w < W_PLANES; w ++) {
     for (int v = 1; v < SUPPORT_V + 1; v ++) {
       for (int u = 1; u < SUPPORT_U + 1; u ++) {
-	support[w][v][u] = make_float2(10000 * w + 100 * v + u, 0);
+        support[w][v][u] = make_float2(10000 * w + 100 * v + u, 0);
       }
 
       support[w][v][0] = make_float2(0, 0);
@@ -356,8 +356,8 @@ __shared__ float2 shared_vis[TIMESTEPS][CHANNELS][POLARIZATIONS];
 
 
 __device__ void loadIntoSharedMem(const VisibilitiesType visibilities,
-				  const UVWtype uvw,
-				  const uint2 supportPixelsUsed[BASELINES])
+                                  const UVWtype uvw,
+                                  const uint2 supportPixelsUsed[BASELINES])
 {
 //__prof_trigger(0);
   unsigned bl = blockIdx.x;
@@ -400,17 +400,17 @@ __device__ void loadIntoSharedMem(const VisibilitiesType visibilities,
 
 __device__ void convolve(GridType grid,
 #if !defined USE_TEXTURE
-			 const SupportType support,
+                         const SupportType support,
 #endif
-			 const uint2 supportPixelsUsed[BASELINES])
+                         const uint2 supportPixelsUsed[BASELINES])
 {
-  unsigned bl	     = blockIdx.x;
+  unsigned bl        = blockIdx.x;
 
 #if MODE == MODE_SIMPLE || MODE == MODE_OVERSAMPLE
   uint2  supportSize = supportPixelsUsed[bl];
 #elif MODE == MODE_INTERPOLATE
   uint2  supportSize = make_uint2(supportPixelsUsed[bl].x + 1, supportPixelsUsed[bl].y + 1);
-  float2 scale	     = make_float2((float) SUPPORT_U / (supportSize.x - 1), (float) SUPPORT_V / (supportSize.y - 1));
+  float2 scale       = make_float2((float) SUPPORT_U / (supportSize.x - 1), (float) SUPPORT_V / (supportSize.y - 1));
   float2 offset      = make_float2(scale.x *.5f + 1.f, scale.y *.5f + 1.f);
 #endif
 
@@ -435,80 +435,80 @@ __device__ void convolve(GridType grid,
 
       /*for (unsigned time = 0; time < TIMESTEPS; time ++)*/ {
 //#pragma unroll 2
-	for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
+        for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
 //__prof_trigger(3);
-	  int4 info = shared_info[0][ch];
+          int4 info = shared_info[0][ch];
 
-	  int my_support_u = box_u + info.x;
-	  int my_support_v = box_v + info.y;
+          int my_support_u = box_u + info.x;
+          int my_support_v = box_v + info.y;
 
-	  if (my_support_u < 0)
-	    my_support_u += supportSize.x;
+          if (my_support_u < 0)
+            my_support_u += supportSize.x;
 
-	  if (my_support_v < 0)
-	    my_support_v += supportSize.y;
+          if (my_support_v < 0)
+            my_support_v += supportSize.y;
 
 #if MODE == MODE_SIMPLE || MODE == MODE_OVERSAMPLE
-	  unsigned index_u = my_support_u;
-	  unsigned index_v = my_support_v;
+          unsigned index_u = my_support_u;
+          unsigned index_v = my_support_v;
 
 #if 0 && defined USE_SYMMETRY
-	  if (index_u > (supportSize.x - 1) / 2)
-	    index_u = supportSize.x - 1 - index_u;
+          if (index_u > (supportSize.x - 1) / 2)
+            index_u = supportSize.x - 1 - index_u;
 
-	  if (index_v > (supportSize.y - 1) / 2)
-	    index_v = supportSize.y - 1 - index_v;
+          if (index_v > (supportSize.y - 1) / 2)
+            index_v = supportSize.y - 1 - index_v;
 #endif
 
 #if MODE == MODE_SIMPLE || (MODE == MODE_OVERSAMPLE && ORDER == ORDER_W_OV_OU_V_U)
-	  unsigned supportIndex = index_u + SUPPORT_U * index_v + info.z;
+          unsigned supportIndex = index_u + SUPPORT_U * index_v + info.z;
 #elif MODE == MODE_OVERSAMPLE && ORDER == ORDER_W_V_OV_U_OU
-	  unsigned supportIndex = OVERSAMPLE_U * index_u + OVERSAMPLE_V * SUPPORT_U * OVERSAMPLE_U * index_v + info.z;
+          unsigned supportIndex = OVERSAMPLE_U * index_u + OVERSAMPLE_V * SUPPORT_U * OVERSAMPLE_U * index_v + info.z;
 #endif
 
 #if defined USE_TEXTURE
-	  float2 supportPixel = tex1Dfetch(supportTexture, supportIndex);
+          float2 supportPixel = tex1Dfetch(supportTexture, supportIndex);
 #else
-	  float2 supportPixel = support[0][0][0][0][supportIndex];
+          float2 supportPixel = support[0][0][0][0][supportIndex];
 #endif
 
 #elif MODE == MODE_INTERPOLATE
-	  float u_frac = shared_frac[0][ch].x;
-	  float v_frac = shared_frac[0][ch].y;
+          float u_frac = shared_frac[0][ch].x;
+          float v_frac = shared_frac[0][ch].y;
 
-	  float index_u = scale.x * (my_support_u - u_frac) + offset.x;
-	  float index_v = scale.y * (my_support_v - v_frac) + offset.y;
+          float index_u = scale.x * (my_support_u - u_frac) + offset.x;
+          float index_v = scale.y * (my_support_v - v_frac) + offset.y;
 
 #if defined USE_SYMMETRY
-	  if (index_u >= SUPPORT_U / 2)
-	    index_u = 2.f + SUPPORT_U - index_u;
+          if (index_u >= SUPPORT_U / 2)
+            index_u = 2.f + SUPPORT_U - index_u;
 
-	  if (index_v >= SUPPORT_V / 2)
-	    index_v = 2.f + SUPPORT_V - index_v;
+          if (index_v >= SUPPORT_V / 2)
+            index_v = 2.f + SUPPORT_V - index_v;
 #endif
 
-	  float2 supportPixel = tex3D(supportTexture, index_u, index_v, __int_as_float(info.z));
+          float2 supportPixel = tex3D(supportTexture, index_u, index_v, __int_as_float(info.z));
 #endif
 
-	  unsigned new_grid_point = my_support_u + GRID_U * my_support_v + info.w;
+          unsigned new_grid_point = my_support_u + GRID_U * my_support_v + info.w;
 
-	  if (new_grid_point != grid_point) {
+          if (new_grid_point != grid_point) {
 //__prof_trigger(4);
-	    atomicAdd(&grid[0][grid_point][0], sumXX, sumXY, sumYX, sumYY);
+            atomicAdd(&grid[0][grid_point][0], sumXX, sumXY, sumYX, sumYY);
 
-	    sumXX = make_float2(0, 0);
-	    sumXY = make_float2(0, 0);
-	    sumYX = make_float2(0, 0);
-	    sumYY = make_float2(0, 0);
+            sumXX = make_float2(0, 0);
+            sumXY = make_float2(0, 0);
+            sumYX = make_float2(0, 0);
+            sumYY = make_float2(0, 0);
 
-	    grid_point = new_grid_point;
-	  }
+            grid_point = new_grid_point;
+          }
 
-	  addSupportPixel(sumXX, supportPixel, shared_vis[0][ch][0]);
-	  addSupportPixel(sumXY, supportPixel, shared_vis[0][ch][1]);
-	  addSupportPixel(sumYX, supportPixel, shared_vis[0][ch][2]);
-	  addSupportPixel(sumYY, supportPixel, shared_vis[0][ch][3]);
-	}
+          addSupportPixel(sumXX, supportPixel, shared_vis[0][ch][0]);
+          addSupportPixel(sumXY, supportPixel, shared_vis[0][ch][1]);
+          addSupportPixel(sumYX, supportPixel, shared_vis[0][ch][2]);
+          addSupportPixel(sumYY, supportPixel, shared_vis[0][ch][3]);
+        }
       }
 
       atomicAdd(&grid[0][grid_point][0], sumXX, sumXY, sumYX, sumYY);
@@ -518,20 +518,20 @@ __device__ void convolve(GridType grid,
 
 
 //#if MODE == MODE_SIMPLE || MODE == MODE_OVERSAMPLE
-#define MIN(A,B)			((A) < (B) ? (A) : (B))
-#define NR_THREADS_PER_BLOCK		MIN(SUPPORT_U * SUPPORT_V, 1024)
-#define MIN_BLOCKS_PER_MULTIPROCESSOR	(2048 / NR_THREADS_PER_BLOCK)
+#define MIN(A,B)                        ((A) < (B) ? (A) : (B))
+#define NR_THREADS_PER_BLOCK            MIN(SUPPORT_U * SUPPORT_V, 1024)
+#define MIN_BLOCKS_PER_MULTIPROCESSOR   (2048 / NR_THREADS_PER_BLOCK)
 __global__ __launch_bounds__(NR_THREADS_PER_BLOCK, MIN_BLOCKS_PER_MULTIPROCESSOR)
 //#else
 //__global__ __launch_bounds__(1024, 1)
 //#endif
 void addToGrid(GridType grid,
 #if !defined USE_TEXTURE
-	       const SupportType support,
+               const SupportType support,
 #endif
-	       const VisibilitiesType visibilities,
-	       const UVWtype uvw,
-	       const uint2 supportPixelsUsed[BASELINES])
+               const VisibilitiesType visibilities,
+               const UVWtype uvw,
+               const uint2 supportPixelsUsed[BASELINES])
 {
   loadIntoSharedMem(visibilities, uvw, supportPixelsUsed);
   syncthreads();
@@ -547,11 +547,11 @@ void addToGrid(GridType grid,
 #if defined DEGRIDDING
 
 __global__ void degrid(const GridType grid,
-		       VisibilitiesType visibilities,
-		       const UVWtype uvw,
-		       const uint2 supportPixelsUsed[BASELINES])
+                       VisibilitiesType visibilities,
+                       const UVWtype uvw,
+                       const uint2 supportPixelsUsed[BASELINES])
 {
-  unsigned bl	       = blockIdx.x;
+  unsigned bl          = blockIdx.x;
   uint2    supportSize = supportPixelsUsed[bl];
 
   for (unsigned ch = threadIdx.x; ch < CHANNELS * TIMESTEPS; ch += blockDim.x) {
@@ -579,15 +579,15 @@ __global__ void degrid(const GridType grid,
 
       for (unsigned u = 0; u < supportSize.x; u ++, gridPtr += POLARIZATIONS) {
 #if MODE == MODE_SIMPLE
-	float2 supportPixel = tex2D(supportTexture, u, v);
+        float2 supportPixel = tex2D(supportTexture, u, v);
 #elif MODE == MODE_OVERSAMPLE
-	float2 supportPixel = tex3D(supportTexture, u + u_os, v + v_os, w_int);
+        float2 supportPixel = tex3D(supportTexture, u + u_os, v + v_os, w_int);
 #endif
 
-	addSupportPixel(sumXX, supportPixel, gridPtr[0]);
-	addSupportPixel(sumXY, supportPixel, gridPtr[1]);
-	addSupportPixel(sumYX, supportPixel, gridPtr[2]);
-	addSupportPixel(sumYY, supportPixel, gridPtr[3]);
+        addSupportPixel(sumXX, supportPixel, gridPtr[0]);
+        addSupportPixel(sumXY, supportPixel, gridPtr[1]);
+        addSupportPixel(sumYX, supportPixel, gridPtr[2]);
+        addSupportPixel(sumYY, supportPixel, gridPtr[3]);
       }
     }
 
@@ -634,20 +634,20 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const float freque
       double angle = 2 * M_PI * ((block * TIMESTEPS + time) / 86400.0 + phi);
 
       for (unsigned ch = 0; ch < CHANNELS; ch ++) {
-	uvw[bl][time][ch] = make_float3(
+        uvw[bl][time][ch] = make_float3(
 #if 0
-	  r * cos(angle) * scale_u[ch] + GRID_U / 2.0 - supportPixelsUsed[bl].x / 2.0,
-	  r * sin(angle) * scale_v[ch] + GRID_V / 2.0 - supportPixelsUsed[bl].y / 2.0,
-	  W_PLANES > 1 ? fmod(.1 * bl + .01 * (block * TIMESTEPS + time), W_PLANES - 1) : 0
+          r * cos(angle) * scale_u[ch] + GRID_U / 2.0 - supportPixelsUsed[bl].x / 2.0,
+          r * sin(angle) * scale_v[ch] + GRID_V / 2.0 - supportPixelsUsed[bl].y / 2.0,
+          W_PLANES > 1 ? fmod(.1 * bl + .01 * (block * TIMESTEPS + time), W_PLANES - 1) : 0
 #else
-	  98.9, 98, 1.9
+          98.9, 98, 1.9
 #endif
-	);
+        );
 
 #if 0
-	uvw[bl][time][ch].x = nearbyintf(8 * uvw[bl][time][ch].x) / 8;
-	uvw[bl][time][ch].y = nearbyintf(8 * uvw[bl][time][ch].y) / 8;
-	uvw[bl][time][ch].z = nearbyintf(1 * uvw[bl][time][ch].z) / 1;
+        uvw[bl][time][ch].x = nearbyintf(8 * uvw[bl][time][ch].x) / 8;
+        uvw[bl][time][ch].y = nearbyintf(8 * uvw[bl][time][ch].y) / 8;
+        uvw[bl][time][ch].z = nearbyintf(1 * uvw[bl][time][ch].z) / 1;
 #endif
       }
     }
@@ -668,23 +668,23 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const float freque
 
     for (unsigned time = 0; time < TIMESTEPS; time ++) {
       for (unsigned ch = 0; ch < CHANNELS; ch ++) {
-	const double *currentUVW = realUVW[block * TIMESTEPS + time][mappedBaseline];
+        const double *currentUVW = realUVW[block * TIMESTEPS + time][mappedBaseline];
 
-	uvw[bl][time][ch] = make_float3(
-	  scale_u[ch] * (float) currentUVW[0] + GRID_U / 2.0f - supportPixelsUsed[bl].x / 2.0f,
-	  scale_v[ch] * (float) currentUVW[1] + GRID_V / 2.0f - supportPixelsUsed[bl].y / 2.0f,
-	  scale_w[ch] * (float) currentUVW[2] + W_PLANES / 2.0f
-	);
+        uvw[bl][time][ch] = make_float3(
+          scale_u[ch] * (float) currentUVW[0] + GRID_U / 2.0f - supportPixelsUsed[bl].x / 2.0f,
+          scale_v[ch] * (float) currentUVW[1] + GRID_V / 2.0f - supportPixelsUsed[bl].y / 2.0f,
+          scale_w[ch] * (float) currentUVW[2] + W_PLANES / 2.0f
+        );
 
-	//if (ch == 0) std::cout << "bl = " << bl << ", t = " << time << ", ch = " << ch << ", uvw = " << uvw[bl][time][ch].x << ", " << uvw[bl][time][ch].y << ", " << uvw[bl][time][ch].z << ", r = " << sqrt(pow(scale_u[ch] * currentUVW[0], 2) + pow(scale_v[ch] * currentUVW[1], 2)) << std::endl;
-	//std::cout << nearbyint(uvw[bl][time][ch].x) << ' ' << nearbyint(uvw[bl][time][ch].y) << std::endl;
+        //if (ch == 0) std::cout << "bl = " << bl << ", t = " << time << ", ch = " << ch << ", uvw = " << uvw[bl][time][ch].x << ", " << uvw[bl][time][ch].y << ", " << uvw[bl][time][ch].z << ", r = " << sqrt(pow(scale_u[ch] * currentUVW[0], 2) + pow(scale_v[ch] * currentUVW[1], 2)) << std::endl;
+        //std::cout << nearbyint(uvw[bl][time][ch].x) << ' ' << nearbyint(uvw[bl][time][ch].y) << std::endl;
 #if 0
-	assert(uvw[bl][time][ch].x >= 0);
-	assert(uvw[bl][time][ch].x <  GRID_U - supportPixelsUsed[bl].x);
-	assert(uvw[bl][time][ch].y >= 0);
-	assert(uvw[bl][time][ch].y <  GRID_V - supportPixelsUsed[bl].y);
-	assert(uvw[bl][time][ch].z >= 0);
-	assert(uvw[bl][time][ch].z <  W_PLANES);
+        assert(uvw[bl][time][ch].x >= 0);
+        assert(uvw[bl][time][ch].x <  GRID_U - supportPixelsUsed[bl].x);
+        assert(uvw[bl][time][ch].y >= 0);
+        assert(uvw[bl][time][ch].y <  GRID_V - supportPixelsUsed[bl].y);
+        assert(uvw[bl][time][ch].z >= 0);
+        assert(uvw[bl][time][ch].z <  W_PLANES);
 #endif
       }
     }
@@ -704,26 +704,26 @@ void initSupport(SupportType support)
   for (int w = 0; w < W_PLANES; w ++)
     for (int ou = 0; ou < OVERSAMPLE_U; ou ++)
       for (int ov = 0; ov < OVERSAMPLE_V; ov ++)
-	for (int v = 0; v < SUPPORT_V; v ++)
-	  for (int u = 0; u < SUPPORT_U; u ++)
-	    support[w][ov][ou][v][u] = make_float2(
-	      (w + 1) * (std::min)(v + 1, SUPPORT_V - v) * (std::min)(u + 1, SUPPORT_U - u),
-	      (w + 1) * (ov + 1) * (ou + 1));
+        for (int v = 0; v < SUPPORT_V; v ++)
+          for (int u = 0; u < SUPPORT_U; u ++)
+            support[w][ov][ou][v][u] = make_float2(
+              (w + 1) * (std::min)(v + 1, SUPPORT_V - v) * (std::min)(u + 1, SUPPORT_U - u),
+              (w + 1) * (ov + 1) * (ou + 1));
 #elif ORDER == ORDER_W_V_OV_U_OU
   for (int w = 0; w < W_PLANES; w ++)
     for (int v = 0; v < SUPPORT_V; v ++)
       for (int ov = 0; ov < OVERSAMPLE_V; ov ++)
-	for (int u = 0; u < SUPPORT_U; u ++)
-	  for (int ou = 0; ou < OVERSAMPLE_U; ou ++)
-	    support[w][v][ov][u][ou] = make_float2(
-	      (w + 1) * std::min(v + 1, SUPPORT_V - v) * std::min(u + 1, SUPPORT_U - u),
-	      (w + 1) * (ov + 1) * (ou + 1));
+        for (int u = 0; u < SUPPORT_U; u ++)
+          for (int ou = 0; ou < OVERSAMPLE_U; ou ++)
+            support[w][v][ov][u][ou] = make_float2(
+              (w + 1) * std::min(v + 1, SUPPORT_V - v) * std::min(u + 1, SUPPORT_U - u),
+              (w + 1) * (ov + 1) * (ou + 1));
 #endif
 #elif MODE == MODE_INTERPOLATE
   for (int w = 0; w < W_PLANES; w ++) {
     for (int v = 1; v < SUPPORT_V + 1; v ++) {
       for (int u = 1; u < SUPPORT_U + 1; u ++) {
-	support[w][v][u] = make_float2(w * (std::min(v, SUPPORT_V + 1 - v) * std::min(u, SUPPORT_U + 1 - u)) / (float) (W_PLANES * (SUPPORT_V + 1) * (SUPPORT_U + 1) / 4) , 0);
+        support[w][v][u] = make_float2(w * (std::min(v, SUPPORT_V + 1 - v) * std::min(u, SUPPORT_U + 1 - u)) / (float) (W_PLANES * (SUPPORT_V + 1) * (SUPPORT_U + 1) / 4) , 0);
       }
 
       support[w][v][0] = make_float2(0, 0);
@@ -752,8 +752,8 @@ void initVisibilities(VisibilitiesType visibilities)
   for (unsigned time = 0; time < TIMESTEPS; time ++)
     for (unsigned bl = 0; bl < BASELINES; bl ++)
       for (unsigned ch = 0; ch < CHANNELS; ch ++)
-	for (unsigned pol = 0; pol < POLARIZATIONS; pol ++)
-	  visibilities[bl][time][ch][pol] = make_float2(2.0f, 1.0f);
+        for (unsigned pol = 0; pol < POLARIZATIONS; pol ++)
+          visibilities[bl][time][ch][pol] = make_float2(2.0f, 1.0f);
 #else
   float2 vis = make_float2(2.0f, 1.0f);
 
@@ -790,7 +790,7 @@ void plotGrid(const GridType grid)
       float val = sqrt(grid[v][u][0].x * grid[v][u][0].x + grid[v][u][0].y * grid[v][u][0].y);
 
       if (val > max)
-	max = val;
+        max = val;
     }
 
   float factor = 255 / max;
@@ -805,14 +805,14 @@ void plotGrid(const GridType grid)
 
     for (int v = GRID_V; -- v >= 0;)
       for (int u = 0; u < GRID_U; u ++)
-	std::cout << 255 - (int) nearbyint(factor * sqrt(grid[0][v][u].x * grid[v[0]][u].x + grid[0][v][u].y * grid[0][v][u].y)) << std::endl;
+        std::cout << 255 - (int) nearbyint(factor * sqrt(grid[0][v][u].x * grid[v[0]][u].x + grid[0][v][u].y * grid[0][v][u].y)) << std::endl;
 #else
     std::cout << "P1" << std::endl;
     std::cout << GRID_U << ' ' << GRID_V << std::endl;
 
     for (int v = GRID_V; -- v >= 0;)
       for (int u = 0; u < GRID_U; u ++)
-	std::cout << (grid[v][u][0].x != 0 || grid[v][u][0].y != 0 ? 1 : 0) << std::endl;
+        std::cout << (grid[v][u][0].x != 0 || grid[v][u][0].y != 0 ? 1 : 0) << std::endl;
 #endif
   }
 }
@@ -825,13 +825,13 @@ void printVisibilities(const VisibilitiesType visibilities, const char *who)
   for (unsigned bl = 0; bl < BASELINES; bl ++)
     for (unsigned time = 0; time < TIMESTEPS; time ++)
       for (unsigned ch = 0; ch < CHANNELS; ch ++)
-	if (visibilities[bl][time][ch][0].x != 0 || visibilities[bl][time][ch][0].y != 0) {
+        if (visibilities[bl][time][ch][0].x != 0 || visibilities[bl][time][ch][0].y != 0) {
 #pragma omp critical (cout)
-	  std::cout << who << ": visibilities[" << bl << "][" << time << "][" << ch << "][0] = " << visibilities[bl][time][ch][0] << std::endl;
+          std::cout << who << ": visibilities[" << bl << "][" << time << "][" << ch << "][0] = " << visibilities[bl][time][ch][0] << std::endl;
 
-	  if (++ count > 16)
-	    return;
-	}
+          if (++ count > 16)
+            return;
+        }
 }
 
 
@@ -839,7 +839,7 @@ void printGrid(const GridType grid, const char *who)
 {
 //std::cout << * (unsigned long long *) &grid[4095][4095][0] << " out of " << * (unsigned long long *) &grid[4095][4095][1] << " (" << 100.0 * * (unsigned long long *) &grid[4095][4095][0] / * (unsigned long long *) &grid[4095][4095][1] << "%)" << std::endl;
   unsigned count_v = 0;
-  double2  sum	   = make_double2(0, 0);
+  double2  sum     = make_double2(0, 0);
 
   for (unsigned v = 0; v < GRID_V; v ++) {
     unsigned count_u = 0;
@@ -847,15 +847,15 @@ void printGrid(const GridType grid, const char *who)
     for (unsigned u = 0; u < GRID_U; u ++) {
       if (grid[v][u][0].x != 0 || grid[v][u][0].y != 0) {
 #if 1
-	if (count_u ++ == 0)
-	  count_v ++;
+        if (count_u ++ == 0)
+          count_v ++;
 
-	if (count_u < 5 && count_v < 5)
+        if (count_u < 5 && count_v < 5)
 #pragma omp critical (cout)
-	  std::cout << who << ": (" << u << ", " << v << "): " << grid[v][u][0] << std::endl;
+          std::cout << who << ": (" << u << ", " << v << "): " << grid[v][u][0] << std::endl;
 #endif
 
-	sum += grid[v][u][0];
+        sum += grid[v][u][0];
       }
     }
   }
@@ -896,10 +896,10 @@ void initSupportOnHostAndDevice(SupportType *&hostSupport, cudaArray *&devSuppor
   //checkCudaCall(cudaMalloc3DArray(&devSupport, &channelDesc, supportExtent));
 
   //cudaMemcpy3DParms copyParams = {0};
-  //copyParams.srcPtr	= make_cudaPitchedPtr(*hostSupport, SUPPORT_U * SUPPORT_V * sizeof(float2), SUPPORT_U * SUPPORT_V, OVERSAMPLE_U * OVERSAMPLE_V);
-  //copyParams.dstArray	= devSupport;
-  //copyParams.extent	= supportExtent;
-  //copyParams.kind	= cudaMemcpyHostToDevice;
+  //copyParams.srcPtr   = make_cudaPitchedPtr(*hostSupport, SUPPORT_U * SUPPORT_V * sizeof(float2), SUPPORT_U * SUPPORT_V, OVERSAMPLE_U * OVERSAMPLE_V);
+  //copyParams.dstArray = devSupport;
+  //copyParams.extent   = supportExtent;
+  //copyParams.kind     = cudaMemcpyHostToDevice;
   //checkCudaCall(cudaMemcpy3D(&copyParams));
 
   //supportTexture.filterMode     = cudaFilterModePoint;
@@ -908,10 +908,10 @@ void initSupportOnHostAndDevice(SupportType *&hostSupport, cudaArray *&devSuppor
   checkCudaCall(cudaMalloc3DArray(&devSupport, &channelDesc, supportExtent));
 
   cudaMemcpy3DParms copyParams = {0};
-  copyParams.srcPtr	= make_cudaPitchedPtr(*hostSupport, (SUPPORT_U + 2) * sizeof(float2), SUPPORT_U + 2, SUPPORT_V + 2);
-  copyParams.dstArray	= devSupport;
-  copyParams.extent	= supportExtent;
-  copyParams.kind	= cudaMemcpyHostToDevice;
+  copyParams.srcPtr     = make_cudaPitchedPtr(*hostSupport, (SUPPORT_U + 2) * sizeof(float2), SUPPORT_U + 2, SUPPORT_V + 2);
+  copyParams.dstArray   = devSupport;
+  copyParams.extent     = supportExtent;
+  copyParams.kind       = cudaMemcpyHostToDevice;
   checkCudaCall(cudaMemcpy3D(&copyParams));
 
   supportTexture.filterMode     = cudaFilterModeLinear;
@@ -1009,37 +1009,37 @@ void doCuda()
     std::cout << "using " << nrThreads << /*'/' << bestNrThreads <<*/ " threads" << std::endl;
     for (unsigned block = 0; block < BLOCKS; block += STREAMS) {
       for (unsigned stream = 0; stream < STREAMS; stream ++) {
-	initUVW(*uvw[stream].hostPtr, *supportPixelsUsed[stream].hostPtr, frequencies, block + stream);
-	initVisibilities(*visibilities[stream].hostPtr /*, block */);
+        initUVW(*uvw[stream].hostPtr, *supportPixelsUsed[stream].hostPtr, frequencies, block + stream);
+        initVisibilities(*visibilities[stream].hostPtr /*, block */);
       }
 
       for (unsigned stream = 0; stream < STREAMS; stream ++) {
-	//startCopy[stream].record(streams[stream]);
-	visibilities[stream].copyHostToDevice(streams[stream]);
-	uvw[stream].copyHostToDevice(streams[stream]);
-	supportPixelsUsed[stream].copyHostToDevice(streams[stream]);
-	//finishedCopy[stream].record(streams[stream]);
+        //startCopy[stream].record(streams[stream]);
+        visibilities[stream].copyHostToDevice(streams[stream]);
+        uvw[stream].copyHostToDevice(streams[stream]);
+        supportPixelsUsed[stream].copyHostToDevice(streams[stream]);
+        //finishedCopy[stream].record(streams[stream]);
       }
 
       for (unsigned stream = 0; stream < STREAMS; stream ++) {
-	printWorkLoad(*supportPixelsUsed[stream].hostPtr);
+        printWorkLoad(*supportPixelsUsed[stream].hostPtr);
 
-	//startCompute[stream].record(streams[stream]);
+        //startCompute[stream].record(streams[stream]);
 #if defined USE_TEXTURE
-	addToGrid<<<BASELINES, nrThreads, 0, streams[stream]>>>(*grids[stream].devPtr, *visibilities[stream].devPtr, *uvw[stream].devPtr, *supportPixelsUsed[stream].devPtr);
+        addToGrid<<<BASELINES, nrThreads, 0, streams[stream]>>>(*grids[stream].devPtr, *visibilities[stream].devPtr, *uvw[stream].devPtr, *supportPixelsUsed[stream].devPtr);
 #else
-	addToGrid<<<BASELINES, nrThreads, 0, streams[stream]>>>(*grids[stream].devPtr, *supports[stream].devPtr, *visibilities[stream].devPtr, *uvw[stream].devPtr, *supportPixelsUsed[stream].devPtr);
+        addToGrid<<<BASELINES, nrThreads, 0, streams[stream]>>>(*grids[stream].devPtr, *supports[stream].devPtr, *visibilities[stream].devPtr, *uvw[stream].devPtr, *supportPixelsUsed[stream].devPtr);
 #endif
-	checkCudaCall(cudaGetLastError());
-	//finishedCompute[stream].record(streams[stream]);
+        checkCudaCall(cudaGetLastError());
+        //finishedCompute[stream].record(streams[stream]);
       }
 
 #if 0
       for (unsigned stream = 0; stream < STREAMS; stream ++) {
-	streams[stream].synchronize();
-	totalExecutionTime += finishedCompute[stream].elapsedTime(startCompute[stream]);
+        streams[stream].synchronize();
+        totalExecutionTime += finishedCompute[stream].elapsedTime(startCompute[stream]);
 #pragma omp critical (cout)
-	std::cout << "copy: " << finishedCopy[stream].elapsedTime(startCopy[stream]) << ", compute: " << finishedCompute[stream].elapsedTime(startCompute[stream]) << std::endl;
+        std::cout << "copy: " << finishedCopy[stream].elapsedTime(startCopy[stream]) << ", compute: " << finishedCompute[stream].elapsedTime(startCompute[stream]) << std::endl;
       }
 #endif
     }
@@ -1053,7 +1053,7 @@ void doCuda()
   if (device >= 4)
 #pragma omp critical (PCIeBus1)
     grids[0].copyDeviceToHost();
-  else 
+  else
 #pragma omp critical (PCIeBus0)
     grids[0].copyDeviceToHost();
 
@@ -1120,14 +1120,14 @@ static cl::Context findDevices(std::vector<cl::Device> &devices)
   for (std::vector<cl::Platform>::iterator platform = platforms.begin(); platform != platforms.end(); platform ++) {
     if (platform->getInfo<CL_PLATFORM_NAME>() == platformName) {
       try {
-	platform->getDevices(type, &devices);
+        platform->getDevices(type, &devices);
       } catch (cl::Error &error) {
-	std::cerr << "no GPU devices" << std::endl;
+        std::cerr << "no GPU devices" << std::endl;
       }
 
       for (std::vector<cl::Device>::iterator device = devices.begin(); device != devices.end(); device ++) {
-	std::cout << "device: " << device->getInfo<CL_DEVICE_NAME>() << std::endl;
-	//std::cout << "max image size = " << device->getInfo<CL_DEVICE_IMAGE2D_MAX_WIDTH>() << 'x' << device->getInfo<CL_DEVICE_IMAGE2D_MAX_HEIGHT>() << std::endl;
+        std::cout << "device: " << device->getInfo<CL_DEVICE_NAME>() << std::endl;
+        //std::cout << "max image size = " << device->getInfo<CL_DEVICE_IMAGE2D_MAX_WIDTH>() << 'x' << device->getInfo<CL_DEVICE_IMAGE2D_MAX_HEIGHT>() << std::endl;
       }
 
       cl_context_properties cps[3] = { CL_CONTEXT_PLATFORM, (cl_context_properties)(*platform)(), 0 };
@@ -1142,12 +1142,12 @@ static cl::Context findDevices(std::vector<cl::Device> &devices)
 
 cl::Program createProgram(cl::Context &context, std::vector<cl::Device> &devices)
 {
-  std::ifstream		kernelStream("Kernel.cl");
-  std::string		kernelSource((std::istreambuf_iterator<char>(kernelStream)), std::istreambuf_iterator<char>());
+  std::ifstream         kernelStream("Kernel.cl");
+  std::string           kernelSource((std::istreambuf_iterator<char>(kernelStream)), std::istreambuf_iterator<char>());
 
   cl::Program::Sources  source(1, std::make_pair(kernelSource.data(), kernelSource.size()));
 
-  cl::Program		program(context, source);
+  cl::Program           program(context, source);
 
   try {
     std::stringstream args;
@@ -1204,7 +1204,7 @@ cl::Program createProgram(cl::Context &context, std::vector<cl::Device> &devices
     binaries[b] = new char[binarySizes[b]];
 
   cl_int error = clGetProgramInfo(program(), CL_PROGRAM_BINARIES, binaries.size() * sizeof(char *), &binaries[0], 0);
-  
+
   if (error != CL_SUCCESS)
     throw cl::Error(error, "clGetProgramInfo"); // FIXME: cleanup binaries[*]
 
@@ -1234,8 +1234,8 @@ void doOpenCL()
 
   try {
     std::vector<cl::Device> devices;
-    cl::Context		    context = findDevices(devices);
-    cl::Program		    program = createProgram(context, devices);
+    cl::Context             context = findDevices(devices);
+    cl::Program             program = createProgram(context, devices);
 
     if (getenv("NR_GPUS") != 0)
       devices.resize((std::min)(devices.size(), (size_t) atoi(getenv("NR_GPUS"))));
@@ -1286,10 +1286,10 @@ void doOpenCL()
 #endif
 
       for (int i = 0 ; i < 3; i ++) {
-	double startTime = getTime();
-	globalQueue.enqueueWriteBuffer(buffer.devPtr, CL_TRUE, 0, size, (char *) *buffer.hostPtr, 0, 0);
-	double stopTime = getTime();
-	std::cout << "transfer speed is " << size / (stopTime - startTime) / 1e9 << std::endl;
+        double startTime = getTime();
+        globalQueue.enqueueWriteBuffer(buffer.devPtr, CL_TRUE, 0, size, (char *) *buffer.hostPtr, 0, 0);
+        double stopTime = getTime();
+        std::cout << "transfer speed is " << size / (stopTime - startTime) / 1e9 << std::endl;
       }
     }
 #endif
@@ -1343,71 +1343,71 @@ void doOpenCL()
 #pragma omp for schedule(dynamic)
       for (unsigned block = 0; block < BLOCKS; block ++) {
 //#pragma omp critical (cout)
-	//std::cout << "thread " << omp_get_thread_num() << " starts init of blk " << block << " at " << getTime() - start << std::endl;
-	//if (block < 2)
+        //std::cout << "thread " << omp_get_thread_num() << " starts init of blk " << block << " at " << getTime() - start << std::endl;
+        //if (block < 2)
 //#pragma omp critical (CPUtoGPU)
-	{
-	  initUVW(*uvw.hostPtr, *supportPixelsUsed.hostPtr, frequencies, block);
-	  initVisibilities(*visibilities.hostPtr /*, block */); // should be done per block
-	}
+        {
+          initUVW(*uvw.hostPtr, *supportPixelsUsed.hostPtr, frequencies, block);
+          initVisibilities(*visibilities.hostPtr /*, block */); // should be done per block
+        }
 
 #if 1
 //#pragma omp critical (CPUtoGPU)
-	//{
+        //{
 //#pragma omp critical (cout)
-	  //std::cout << "thread " << omp_get_thread_num() << " starts transfer A of blk " << block << " at " << getTime() - start << std::endl;
+          //std::cout << "thread " << omp_get_thread_num() << " starts transfer A of blk " << block << " at " << getTime() - start << std::endl;
 //#pragma omp critical (cout)
-	  uvw.copyHostToDevice(queue);
-	  //std::cout << "thread " << omp_get_thread_num() << " starts transfer B of blk " << block << " at " << getTime() - start << std::endl;
-	  supportPixelsUsed.copyHostToDevice(queue);
+          uvw.copyHostToDevice(queue);
+          //std::cout << "thread " << omp_get_thread_num() << " starts transfer B of blk " << block << " at " << getTime() - start << std::endl;
+          supportPixelsUsed.copyHostToDevice(queue);
 //#pragma omp critical (cout)
-	  //std::cout << "thread " << omp_get_thread_num() << " starts transfer C of blk " << block << " at " << getTime() - start << std::endl;
-	  visibilities.copyHostToDevice(queue);
-	  //queue.flush();
+          //std::cout << "thread " << omp_get_thread_num() << " starts transfer C of blk " << block << " at " << getTime() - start << std::endl;
+          visibilities.copyHostToDevice(queue);
+          //queue.flush();
 //#pragma omp critical (cout)
-	  //std::cout << "thread " << omp_get_thread_num() << " flushed blk " << block << " at " << getTime() - start << std::endl;
-	  //queue.finish();
+          //std::cout << "thread " << omp_get_thread_num() << " flushed blk " << block << " at " << getTime() - start << std::endl;
+          //queue.finish();
 //#pragma omp critical (cout)
-	  //std::cout << "thread " << omp_get_thread_num() << " finishes transfer of blk " << block << " at " << getTime() - start << std::endl;
-	//}
+          //std::cout << "thread " << omp_get_thread_num() << " finishes transfer of blk " << block << " at " << getTime() - start << std::endl;
+        //}
 #endif
 
-	addToGrid.setArg(0, grid.devPtr);
-	addToGrid.setArg(1, visibilities.devPtr);
-	addToGrid.setArg(2, uvw.devPtr);
-	addToGrid.setArg(3, supportPixelsUsed.devPtr);
+        addToGrid.setArg(0, grid.devPtr);
+        addToGrid.setArg(1, visibilities.devPtr);
+        addToGrid.setArg(2, uvw.devPtr);
+        addToGrid.setArg(3, supportPixelsUsed.devPtr);
 #if defined USE_TEXTURE
-	addToGrid.setArg(4, supportImage);
+        addToGrid.setArg(4, supportImage);
 #else
-	addToGrid.setArg(4, support.devPtr);
+        addToGrid.setArg(4, support.devPtr);
 #endif
 
 //#pragma omp critical (cout)
-	  //std::cout << "thread " << omp_get_thread_num() << " starts compute of blk " << block << " at " << getTime() - start << std::endl;
-	queue.enqueueNDRangeKernel(addToGrid, cl::NullRange, cl::NDRange(nrThreads, BASELINES), cl::NDRange(nrThreads, 1), 0, &event);
-	//queue.finish();
+          //std::cout << "thread " << omp_get_thread_num() << " starts compute of blk " << block << " at " << getTime() - start << std::endl;
+        queue.enqueueNDRangeKernel(addToGrid, cl::NullRange, cl::NDRange(nrThreads, BASELINES), cl::NDRange(nrThreads, 1), 0, &event);
+        //queue.finish();
 //#pragma omp critical (cout)
-	  //std::cout << "thread " << omp_get_thread_num() << " finishes compute of blk " << block << " at " << getTime() - start << std::endl;
+          //std::cout << "thread " << omp_get_thread_num() << " finishes compute of blk " << block << " at " << getTime() - start << std::endl;
 
 #if 0
-	try {
-	  queue.finish();
-	} catch (cl::Error &err) {
-	  std::cerr << "bah1!: " << err.what() << ": " << errorMessage(err) << std::endl;
-	}
+        try {
+          queue.finish();
+        } catch (cl::Error &err) {
+          std::cerr << "bah1!: " << err.what() << ": " << errorMessage(err) << std::endl;
+        }
 #endif
 
-	event.wait();
+        event.wait();
 #if defined ENABLE_PROFILING
-	unsigned long long start, stop;
-	//event.getProfilingInfo(CL_PROFILING_COMMAND_QUEUED, &queued);
-	//event.getProfilingInfo(CL_PROFILING_COMMAND_SUBMIT, &submitted);
-	event.getProfilingInfo(CL_PROFILING_COMMAND_START, &start);
-	event.getProfilingInfo(CL_PROFILING_COMMAND_END, &stop);
+        unsigned long long start, stop;
+        //event.getProfilingInfo(CL_PROFILING_COMMAND_QUEUED, &queued);
+        //event.getProfilingInfo(CL_PROFILING_COMMAND_SUBMIT, &submitted);
+        event.getProfilingInfo(CL_PROFILING_COMMAND_START, &start);
+        event.getProfilingInfo(CL_PROFILING_COMMAND_END, &stop);
 
 //#pragma omp critical (cout)
-	//std::cout << "kernel run time: " << (stop - start) / 1e9 << 's' << std::endl;
-	totalExecutionTime += stop - start;
+        //std::cout << "kernel run time: " << (stop - start) / 1e9 << 's' << std::endl;
+        totalExecutionTime += stop - start;
 #endif
       }
     }
@@ -1434,10 +1434,10 @@ void doOpenCL()
 #if !defined __CUDA__ && !defined __OPENCL__
 
 void doCPUgridding(GridType grid[],
-		   SupportType support,
-		   VisibilitiesType visibilities,
-		   UVWtype uvw,
-		   uint2 supportPixelsUsed[BASELINES])
+                   SupportType support,
+                   VisibilitiesType visibilities,
+                   UVWtype uvw,
+                   uint2 supportPixelsUsed[BASELINES])
 {
 #pragma omp parallel
   {
@@ -1447,91 +1447,91 @@ void doCPUgridding(GridType grid[],
 #pragma omp for schedule(dynamic)
     for (int bl = 0; bl < BASELINES; bl ++) {
       for (unsigned v = 0; v <= supportPixelsUsed[bl].x; v ++) {
-	float scale_u = (float) SUPPORT_U / supportPixelsUsed[bl].x;
-	float scale_v = (float) SUPPORT_V / supportPixelsUsed[bl].y;
+        float scale_u = (float) SUPPORT_U / supportPixelsUsed[bl].x;
+        float scale_v = (float) SUPPORT_V / supportPixelsUsed[bl].y;
 
-	/*for (unsigned time = 0; time < TIMESTEPS; time ++)*/ {
-	  for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
+        /*for (unsigned time = 0; time < TIMESTEPS; time ++)*/ {
+          for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
 #if 0
-	    float grid_u = nearbyintf(256.f * uvw[bl][0][ch].x) / 256.0f;
-	    float grid_v = nearbyintf(256.f * uvw[bl][0][ch].y) / 256.0f;
-	    float w      = nearbyintf(256.f * uvw[bl][0][ch].z) / 256.0f;
+            float grid_u = nearbyintf(256.f * uvw[bl][0][ch].x) / 256.0f;
+            float grid_v = nearbyintf(256.f * uvw[bl][0][ch].y) / 256.0f;
+            float w      = nearbyintf(256.f * uvw[bl][0][ch].z) / 256.0f;
 #else
-	    float grid_u = uvw[bl][0][ch].x;
-	    float grid_v = uvw[bl][0][ch].y;
-	    float w      = uvw[bl][0][ch].z;
+            float grid_u = uvw[bl][0][ch].x;
+            float grid_v = uvw[bl][0][ch].y;
+            float w      = uvw[bl][0][ch].z;
 #endif
 
-	    unsigned grid_u_int  = (unsigned) nearbyintf(grid_u);
-	    float    grid_u_frac = grid_u - grid_u_int;
-	    unsigned grid_v_int  = (unsigned) nearbyintf(grid_v);
-	    float    grid_v_frac = grid_v - grid_v_int;
+            unsigned grid_u_int  = (unsigned) nearbyintf(grid_u);
+            float    grid_u_frac = grid_u - grid_u_int;
+            unsigned grid_v_int  = (unsigned) nearbyintf(grid_v);
+            float    grid_v_frac = grid_v - grid_v_int;
 
 #if defined __AVX__
-	    __m256 vis = _mm256_load_ps((const float *) &visibilities[bl][0][ch][0]);
-	    __m256 *gridptr = (__m256 *) &(*localGrid)[grid_v_int + v][grid_u_int][0];
+            __m256 vis = _mm256_load_ps((const float *) &visibilities[bl][0][ch][0]);
+            __m256 *gridptr = (__m256 *) &(*localGrid)[grid_v_int + v][grid_u_int][0];
 #endif
 
-	    float    support_v = .5f + scale_v * (v - grid_v_frac + .5f);
-	    unsigned support_v_int = (unsigned) support_v;
-	    float    v1 = support_v - support_v_int;
-	    float    v0 = 1 - v1;
-	    unsigned support_w_int = (unsigned) w;
-	    float    w1 = w - support_w_int;
-	    float    w0 = 1 - w1;
+            float    support_v = .5f + scale_v * (v - grid_v_frac + .5f);
+            unsigned support_v_int = (unsigned) support_v;
+            float    v1 = support_v - support_v_int;
+            float    v0 = 1 - v1;
+            unsigned support_w_int = (unsigned) w;
+            float    w1 = w - support_w_int;
+            float    w0 = 1 - w1;
 
-	    float vw00 = v0 * w0;
-	    float vw10 = v1 * w0;
-	    float vw01 = v0 * w1;
-	    float vw11 = v1 * w1;
+            float vw00 = v0 * w0;
+            float vw10 = v1 * w0;
+            float vw01 = v0 * w1;
+            float vw11 = v1 * w1;
 
-	    for (unsigned u = 0; u <= supportPixelsUsed[bl].y; u ++) {
-	      float    support_u = .5f + scale_u * (u - grid_u_frac + .5f);
-	      unsigned support_u_int = (unsigned) support_u;
-	      float    u1 = support_u - support_u_int;
-	      float    u0 = 1 - u1;
+            for (unsigned u = 0; u <= supportPixelsUsed[bl].y; u ++) {
+              float    support_u = .5f + scale_u * (u - grid_u_frac + .5f);
+              unsigned support_u_int = (unsigned) support_u;
+              float    u1 = support_u - support_u_int;
+              float    u0 = 1 - u1;
 
-	      float2 weight = u0 * (vw00 * support[support_w_int    ][support_v_int    ][support_u_int    ] +
-				    vw01 * support[support_w_int    ][support_v_int + 1][support_u_int    ] +
-				    vw10 * support[support_w_int + 1][support_v_int    ][support_u_int    ] +
-				    vw11 * support[support_w_int + 1][support_v_int + 1][support_u_int    ]) +
-			      u1 * (vw00 * support[support_w_int    ][support_v_int    ][support_u_int + 1] +
-				    vw01 * support[support_w_int    ][support_v_int + 1][support_u_int + 1] +
-				    vw10 * support[support_w_int + 1][support_v_int    ][support_u_int + 1] +
-				    vw11 * support[support_w_int + 1][support_v_int + 1][support_u_int + 1]);
+              float2 weight = u0 * (vw00 * support[support_w_int    ][support_v_int    ][support_u_int    ] +
+                                    vw01 * support[support_w_int    ][support_v_int + 1][support_u_int    ] +
+                                    vw10 * support[support_w_int + 1][support_v_int    ][support_u_int    ] +
+                                    vw11 * support[support_w_int + 1][support_v_int + 1][support_u_int    ]) +
+                              u1 * (vw00 * support[support_w_int    ][support_v_int    ][support_u_int + 1] +
+                                    vw01 * support[support_w_int    ][support_v_int + 1][support_u_int + 1] +
+                                    vw10 * support[support_w_int + 1][support_v_int    ][support_u_int + 1] +
+                                    vw11 * support[support_w_int + 1][support_v_int + 1][support_u_int + 1]);
 
 #if defined __AVX__
 #if 0
-	      __m128 sup00 = _mm_load_ps(&support[support_w_int    ][support_v_int    ][support_u_int]);
-	      __m128 sup10 = _mm_load_ps(&support[support_w_int    ][support_v_int + 1][support_u_int]);
-	      __m128 sup01 = _mm_load_ps(&support[support_w_int + 1][support_v_int    ][support_u_int]);
-	      __m128 sup11 = _mm_load_ps(&support[support_w_int + 1][support_v_int + 1][support_u_int]);
-	      sup00 = _mm_mul_ps(sup00, vw00);
-	      sup10 = _mm_mul_ps(sup10, vw10);
-	      sup01 = _mm_mul_ps(sup00, vw01);
-	      sup11 = _mm_mul_ps(sup10, vw11);
-	      //__m256 sup0 =_mm256_insertf128_ps((__m256) sup00, sup10, 1);
-	      //__m256 sup1 =_mm256_insertf128_ps((__m256) sup01, sup11, 1);
+              __m128 sup00 = _mm_load_ps(&support[support_w_int    ][support_v_int    ][support_u_int]);
+              __m128 sup10 = _mm_load_ps(&support[support_w_int    ][support_v_int + 1][support_u_int]);
+              __m128 sup01 = _mm_load_ps(&support[support_w_int + 1][support_v_int    ][support_u_int]);
+              __m128 sup11 = _mm_load_ps(&support[support_w_int + 1][support_v_int + 1][support_u_int]);
+              sup00 = _mm_mul_ps(sup00, vw00);
+              sup10 = _mm_mul_ps(sup10, vw10);
+              sup01 = _mm_mul_ps(sup00, vw01);
+              sup11 = _mm_mul_ps(sup10, vw11);
+              //__m256 sup0 =_mm256_insertf128_ps((__m256) sup00, sup10, 1);
+              //__m256 sup1 =_mm256_insertf128_ps((__m256) sup01, sup11, 1);
 #endif
 
 
-	      __m256 weight_r = _mm256_set1_ps(weight.x);
-	      __m256 weight_i = _mm256_set1_ps(weight.y);
-	      __m256 t7 = _mm256_mul_ps(weight_r, vis);
-	      __m256 t6 = _mm256_mul_ps(weight_i, vis);
-	      __m256 t8 = _mm256_permute_ps(t6, 0xB1);
-	      __m256 t9 = _mm256_addsub_ps(t7, t8);
-	      gridptr[u] = _mm256_add_ps(gridptr[u], t9);
+              __m256 weight_r = _mm256_set1_ps(weight.x);
+              __m256 weight_i = _mm256_set1_ps(weight.y);
+              __m256 t7 = _mm256_mul_ps(weight_r, vis);
+              __m256 t6 = _mm256_mul_ps(weight_i, vis);
+              __m256 t8 = _mm256_permute_ps(t6, 0xB1);
+              __m256 t9 = _mm256_addsub_ps(t7, t8);
+              gridptr[u] = _mm256_add_ps(gridptr[u], t9);
 #else
-	      for (unsigned pol = 0; pol < POLARIZATIONS; pol ++) {
-		float2 prod   = visibilities[bl][0][ch][pol] * weight;
-		float2 &pixel = (*localGrid)[grid_v_int + v][grid_u_int + u][pol];
-		pixel += prod;
-	      }
+              for (unsigned pol = 0; pol < POLARIZATIONS; pol ++) {
+                float2 prod   = visibilities[bl][0][ch][pol] * weight;
+                float2 &pixel = (*localGrid)[grid_v_int + v][grid_u_int + u][pol];
+                pixel += prod;
+              }
 #endif
-	    }
-	  }
-	}
+            }
+          }
+        }
       }
     }
 #elif MODE == MODE_OVERSAMPLE
@@ -1540,91 +1540,91 @@ void doCPUgridding(GridType grid[],
       unsigned v_end  = supportPixelsUsed[bl].y;
 
       for (unsigned v = 0; v < v_end; v ++) {
-	/*for (unsigned time = 0; time < TIMESTEPS; time ++)*/ {
-	  for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
-	    float uc = uvw[bl][0][ch].x;
-	    float vc = uvw[bl][0][ch].y;
-	    unsigned wc = (unsigned) uvw[bl][0][ch].z;
-	    unsigned grid_u = (unsigned) uc;
-	    unsigned grid_v = (unsigned) vc;
-	    float	   u_frac = uc - grid_u;
-	    float	   v_frac = vc - grid_v;
-	    unsigned ou     = (unsigned) (OVERSAMPLE_U * u_frac);
-	    unsigned ov     = (unsigned) (OVERSAMPLE_V * v_frac);
-	    unsigned u_end  = supportPixelsUsed[bl].x;
+        /*for (unsigned time = 0; time < TIMESTEPS; time ++)*/ {
+          for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
+            float uc = uvw[bl][0][ch].x;
+            float vc = uvw[bl][0][ch].y;
+            unsigned wc = (unsigned) uvw[bl][0][ch].z;
+            unsigned grid_u = (unsigned) uc;
+            unsigned grid_v = (unsigned) vc;
+            float          u_frac = uc - grid_u;
+            float          v_frac = vc - grid_v;
+            unsigned ou     = (unsigned) (OVERSAMPLE_U * u_frac);
+            unsigned ov     = (unsigned) (OVERSAMPLE_V * v_frac);
+            unsigned u_end  = supportPixelsUsed[bl].x;
 
 #if defined __AVX__
-	    __m256 vis = _mm256_load_ps((const float *) &visibilities[bl][0][ch][0]);
-	    __m256 *gridptr = (__m256 *) &(*localGrid)[grid_v + v][grid_u][0];
+            __m256 vis = _mm256_load_ps((const float *) &visibilities[bl][0][ch][0]);
+            __m256 *gridptr = (__m256 *) &(*localGrid)[grid_v + v][grid_u][0];
 
 #if ORDER == ORDER_W_OV_OU_V_U
-	    float2 *support_ptr = &support[wc][ov][ou][v][0];
+            float2 *support_ptr = &support[wc][ov][ou][v][0];
 #elif ORDER == ORDER_W_V_OV_U_OU
-	    float2 *support_ptr = &support[w][v][ov][0][ou];
+            float2 *support_ptr = &support[w][v][ov][0][ou];
 #endif
-	    for (unsigned u = 0; u < u_end; u ++) {
+            for (unsigned u = 0; u < u_end; u ++) {
 #if ORDER == ORDER_W_OV_OU_V_U
-	      __m256 weight_r = _mm256_set1_ps(support_ptr[u].x);
-	      __m256 weight_i = _mm256_set1_ps(support_ptr[u].y);
+              __m256 weight_r = _mm256_set1_ps(support_ptr[u].x);
+              __m256 weight_i = _mm256_set1_ps(support_ptr[u].y);
 #elif ORDER == ORDER_W_V_OV_U_OU
-	      __m256 weight_r = _mm256_set1_ps(support_ptr[OVERSAMPLE_U * u].x);
-	      __m256 weight_i = _mm256_set1_ps(support_ptr[OVERSAMPLE_U * u].y);
+              __m256 weight_r = _mm256_set1_ps(support_ptr[OVERSAMPLE_U * u].x);
+              __m256 weight_i = _mm256_set1_ps(support_ptr[OVERSAMPLE_U * u].y);
 #endif
-	      __m256 t7 = _mm256_mul_ps(weight_r, vis);
-	      __m256 t6 = _mm256_mul_ps(weight_i, vis);
-	      __m256 t8 = _mm256_permute_ps(t6, 0xB1);
-	      __m256 t9 = _mm256_addsub_ps(t7, t8);
-	      gridptr[u] = _mm256_add_ps(gridptr[u], t9);
-	    }
+              __m256 t7 = _mm256_mul_ps(weight_r, vis);
+              __m256 t6 = _mm256_mul_ps(weight_i, vis);
+              __m256 t8 = _mm256_permute_ps(t6, 0xB1);
+              __m256 t9 = _mm256_addsub_ps(t7, t8);
+              gridptr[u] = _mm256_add_ps(gridptr[u], t9);
+            }
 #elif defined __SSE3__
-	    __m128 vis0 = _mm_load_ps((const float *) &visibilities[bl][0][ch][0]);
-	    __m128 vis1 = _mm_load_ps((const float *) &visibilities[bl][0][ch][2]);
-	    __m128 *gridptr = (__m128 *) &(*localGrid)[grid_v + v][grid_u][0];
+            __m128 vis0 = _mm_load_ps((const float *) &visibilities[bl][0][ch][0]);
+            __m128 vis1 = _mm_load_ps((const float *) &visibilities[bl][0][ch][2]);
+            __m128 *gridptr = (__m128 *) &(*localGrid)[grid_v + v][grid_u][0];
 
 #if ORDER == ORDER_W_OV_OU_V_U
-	    float2 *support_ptr = &support[wc][ov][ou][v][0];
+            float2 *support_ptr = &support[wc][ov][ou][v][0];
 #elif ORDER == ORDER_W_V_OV_U_OU
-	    float2 *support_ptr = &support[w][v][ov][0][ou];
+            float2 *support_ptr = &support[w][v][ov][0][ou];
 #endif
-	    for (unsigned u = 0; u < u_end; u ++) {
+            for (unsigned u = 0; u < u_end; u ++) {
 #if ORDER == ORDER_W_OV_OU_V_U
-	      __m128 weight_r = _mm_set1_ps(support_ptr[u].x);
-	      __m128 weight_i = _mm_set1_ps(support_ptr[u].y);
+              __m128 weight_r = _mm_set1_ps(support_ptr[u].x);
+              __m128 weight_i = _mm_set1_ps(support_ptr[u].y);
 #elif ORDER == ORDER_W_V_OV_U_OU
-	      __m128 weight_r = _mm_set1_ps(support_ptr[OVERSAMPLE_U * u].x);
-	      __m128 weight_i = _mm_set1_ps(support_ptr[OVERSAMPLE_U * u].y);
+              __m128 weight_r = _mm_set1_ps(support_ptr[OVERSAMPLE_U * u].x);
+              __m128 weight_i = _mm_set1_ps(support_ptr[OVERSAMPLE_U * u].y);
 #endif
-	      __m128 t70 = _mm_mul_ps(weight_r, vis0);
-	      __m128 t60 = _mm_mul_ps(weight_i, vis0);
-	      __m128 t71 = _mm_mul_ps(weight_r, vis1);
-	      __m128 t61 = _mm_mul_ps(weight_i, vis1);
-	      __m128 t80 = _mm_shuffle_ps(t60, t60, 0xB1);
-	      __m128 t81 = _mm_shuffle_ps(t61, t61, 0xB1);
-	      __m128 t90 = _mm_addsub_ps(t70, t80);
-	      __m128 t91 = _mm_addsub_ps(t71, t81);
-	      gridptr[2 * u    ] = _mm_add_ps(gridptr[2 * u    ], t90);
-	      gridptr[2 * u + 1] = _mm_add_ps(gridptr[2 * u + 1], t91);
-	    }
+              __m128 t70 = _mm_mul_ps(weight_r, vis0);
+              __m128 t60 = _mm_mul_ps(weight_i, vis0);
+              __m128 t71 = _mm_mul_ps(weight_r, vis1);
+              __m128 t61 = _mm_mul_ps(weight_i, vis1);
+              __m128 t80 = _mm_shuffle_ps(t60, t60, 0xB1);
+              __m128 t81 = _mm_shuffle_ps(t61, t61, 0xB1);
+              __m128 t90 = _mm_addsub_ps(t70, t80);
+              __m128 t91 = _mm_addsub_ps(t71, t81);
+              gridptr[2 * u    ] = _mm_add_ps(gridptr[2 * u    ], t90);
+              gridptr[2 * u + 1] = _mm_add_ps(gridptr[2 * u + 1], t91);
+            }
 #else
-	    float2 visXX = visibilities[bl][0][ch][0];
-	    float2 visXY = visibilities[bl][0][ch][1];
-	    float2 visYX = visibilities[bl][0][ch][2];
-	    float2 visYY = visibilities[bl][0][ch][3];
+            float2 visXX = visibilities[bl][0][ch][0];
+            float2 visXY = visibilities[bl][0][ch][1];
+            float2 visYX = visibilities[bl][0][ch][2];
+            float2 visYY = visibilities[bl][0][ch][3];
 
-	    for (unsigned u = 0; u < u_end; u ++) {
+            for (unsigned u = 0; u < u_end; u ++) {
 #if ORDER == ORDER_W_OV_OU_V_U
-	      float2 weight = support[wc][ov][ou][v][u];
+              float2 weight = support[wc][ov][ou][v][u];
 #elif ORDER == ORDER_W_V_OV_U_OU
-	      float2 weight = support[wc][v][ov][u][ou];
+              float2 weight = support[wc][v][ov][u][ou];
 #endif
-	      (*localGrid)[grid_v + v][grid_u + u][0] += visXX * weight;
-	      (*localGrid)[grid_v + v][grid_u + u][1] += visXY * weight;
-	      (*localGrid)[grid_v + v][grid_u + u][2] += visYX * weight;
-	      (*localGrid)[grid_v + v][grid_u + u][3] += visYY * weight;
-	    }
+              (*localGrid)[grid_v + v][grid_u + u][0] += visXX * weight;
+              (*localGrid)[grid_v + v][grid_u + u][1] += visXY * weight;
+              (*localGrid)[grid_v + v][grid_u + u][2] += visYX * weight;
+              (*localGrid)[grid_v + v][grid_u + u][3] += visYY * weight;
+            }
 #endif
-	  }
-	}
+          }
+        }
       }
     }
 #elif MODE == MODE_SIMPLE
@@ -1634,22 +1634,22 @@ void doCPUgridding(GridType grid[],
       unsigned v_end  = supportPixelsUsed[bl].y;
 
       /*for (unsigned time = 0; time < TIMESTEPS; time ++)*/ {
-	for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
-	  unsigned grid_u = (unsigned) nearbyintf(uvw[bl][0][ch].x);
-	  unsigned grid_v = (unsigned) nearbyintf(uvw[bl][0][ch].y);
+        for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
+          unsigned grid_u = (unsigned) nearbyintf(uvw[bl][0][ch].x);
+          unsigned grid_v = (unsigned) nearbyintf(uvw[bl][0][ch].y);
 
-	  for (unsigned v = 0; v < v_end; v ++) {
-	    for (unsigned u = 0; u < u_end; u ++) {
-	      float2 weight = support[v][u];
+          for (unsigned v = 0; v < v_end; v ++) {
+            for (unsigned u = 0; u < u_end; u ++) {
+              float2 weight = support[v][u];
 
-	      for (unsigned pol = 0; pol < POLARIZATIONS; pol ++) {
-		float2 prod   = visibilities[bl][0][ch][pol] * weight;
-		float2 &pixel = (*localGrid)[grid_v + v][grid_u + u][pol];
-		pixel += prod;
-	      }
-	    }
-	  }
-	}
+              for (unsigned pol = 0; pol < POLARIZATIONS; pol ++) {
+                float2 prod   = visibilities[bl][0][ch][pol] * weight;
+                float2 &pixel = (*localGrid)[grid_v + v][grid_u + u][pol];
+                pixel += prod;
+              }
+            }
+          }
+        }
       }
     }
 #endif
@@ -1660,10 +1660,10 @@ void doCPUgridding(GridType grid[],
 #if defined DEGRIDDING
 
 void doCPUdegridding(GridType grid,
-		     SupportType support,
-		     VisibilitiesType visibilities,
-		     UVWtype uvw,
-		     uint2 supportPixelsUsed[BASELINES])
+                     SupportType support,
+                     VisibilitiesType visibilities,
+                     UVWtype uvw,
+                     uint2 supportPixelsUsed[BASELINES])
 {
 #pragma omp parallel for schedule(dynamic)
   for (int bl = 0; bl < BASELINES; bl ++) {
@@ -1671,49 +1671,49 @@ void doCPUdegridding(GridType grid,
 
     /*for (unsigned time = 0; time < TIMESTEPS; time ++)*/ {
       for (unsigned ch = 0; ch < CHANNELS * TIMESTEPS; ch ++) {
-	float2   sumXX  = make_float2(0, 0);
-	float2   sumXY  = make_float2(0, 0);
-	float2   sumYX  = make_float2(0, 0);
-	float2   sumYY  = make_float2(0, 0);
+        float2   sumXX  = make_float2(0, 0);
+        float2   sumXY  = make_float2(0, 0);
+        float2   sumYX  = make_float2(0, 0);
+        float2   sumYY  = make_float2(0, 0);
 
 #if MODE == MODE_SIMPLE
-	unsigned u_int = (unsigned) nearbyintf(uvw[bl][0][ch].x);
-	unsigned v_int = (unsigned) nearbyintf(uvw[bl][0][ch].y);
+        unsigned u_int = (unsigned) nearbyintf(uvw[bl][0][ch].x);
+        unsigned v_int = (unsigned) nearbyintf(uvw[bl][0][ch].y);
 #elif MODE == MODE_OVERSAMPLE
-	float	 grid_u = uvw[bl][0][ch].x;
-	float	 grid_v = uvw[bl][0][ch].y;
-	float	 grid_w = uvw[bl][0][ch].z;
-	unsigned u_int  = (unsigned) grid_u;
-	unsigned v_int  = (unsigned) grid_v;
-	unsigned w_int  = (unsigned) grid_w;
-	float	 u_frac = grid_u - u_int;
-	float	 v_frac = grid_v - v_int;
-	unsigned ou     = (unsigned) (OVERSAMPLE_U * u_frac);
-	unsigned ov     = (unsigned) (OVERSAMPLE_V * v_frac);
+        float    grid_u = uvw[bl][0][ch].x;
+        float    grid_v = uvw[bl][0][ch].y;
+        float    grid_w = uvw[bl][0][ch].z;
+        unsigned u_int  = (unsigned) grid_u;
+        unsigned v_int  = (unsigned) grid_v;
+        unsigned w_int  = (unsigned) grid_w;
+        float    u_frac = grid_u - u_int;
+        float    v_frac = grid_v - v_int;
+        unsigned ou     = (unsigned) (OVERSAMPLE_U * u_frac);
+        unsigned ov     = (unsigned) (OVERSAMPLE_V * v_frac);
 #endif
 
-	for (unsigned v = 0; v < supportSize.y; v ++) {
-	  for (unsigned u = 0; u < supportSize.x; u ++) {
+        for (unsigned v = 0; v < supportSize.y; v ++) {
+          for (unsigned u = 0; u < supportSize.x; u ++) {
 #if MODE == MODE_SIMPLE
-	    float2 weight = support[v][u];
+            float2 weight = support[v][u];
 #elif MODE == MODE_OVERSAMPLE
 #if ORDER == ORDER_W_OV_OU_V_U
-	    float2 weight = support[w_int][ov][ou][v][u];
+            float2 weight = support[w_int][ov][ou][v][u];
 #elif ORDER == ORDER_W_V_OV_U_OU
-	    float2 weight = support[w_int][v][ov][u][ou];
+            float2 weight = support[w_int][v][ov][u][ou];
 #endif
 #endif
-	    sumXX += grid[v_int + v][u_int + u][0] * weight;
-	    sumXY += grid[v_int + v][u_int + u][1] * weight;
-	    sumYX += grid[v_int + v][u_int + u][2] * weight;
-	    sumYY += grid[v_int + v][u_int + u][3] * weight;
-	  }
-	}
+            sumXX += grid[v_int + v][u_int + u][0] * weight;
+            sumXY += grid[v_int + v][u_int + u][1] * weight;
+            sumYX += grid[v_int + v][u_int + u][2] * weight;
+            sumYY += grid[v_int + v][u_int + u][3] * weight;
+          }
+        }
 
-	visibilities[bl][0][ch][0] = sumXX;
-	visibilities[bl][0][ch][1] = sumXY;
-	visibilities[bl][0][ch][2] = sumYX;
-	visibilities[bl][0][ch][3] = sumYY;
+        visibilities[bl][0][ch][0] = sumXX;
+        visibilities[bl][0][ch][1] = sumXY;
+        visibilities[bl][0][ch][2] = sumYX;
+        visibilities[bl][0][ch][3] = sumYY;
       }
     }
   }
