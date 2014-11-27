@@ -1,0 +1,43 @@
+#!/bin/sh
+
+mkdir -p benchmarks
+
+CXX=icc
+#CXXFLAGS="-O3 -fopenmp -x c++ -msse4.1"
+CXXFLAGS="-O3 -fopenmp -x c++ -mavx"
+
+if [  ]; then
+  for c in 256 192 128 96 64 48 32 24 16; do
+    echo simple $c
+    $CXX -g -DMODE=0 -DSUPPORT_U=$c -DSUPPORT_V=$c -DTIMESTEPS=60 -DBLOCKS=36 UVW.o $CXXFLAGS Gridding.cc -o a.out.0.$c
+    #prun -t 3:00:00 a.out.0.$c 1 </dev/null >benchmarks/out.2xE5-2680.Intel.C++.basic.$c 2>&1 &
+    a.out.0.$c >benchmarks/out.2xE5-2680.Intel.C++.basic.$c 2>&1
+  done
+fi
+
+if [  ]; then
+  for c in 256 192 128 96 64 48 32 24 16; do
+    #for w in 128 64 32 16; do
+    for w in 32; do
+      if [ $w -le 32 -o -$c -le 128 ]; then
+	echo oversampling $c $w
+	$CXX -g -DMODE=1 -DSUPPORT_U=$c -DSUPPORT_V=$c -DW_PLANES=$w -DTIMESTEPS=60 -DBLOCKS=36 UVW.o $CXXFLAGS Gridding.cc -o a.out.1.$c.$w
+	#prun -t 3:00:00 a.out.1.$c.$w 1 </dev/null >benchmarks/out.2xE5-2680.Intel.C++.Wprojection.$c.$w 2>&1 &
+	a.out.1.$c.$w >benchmarks/out.2xE5-2680.Intel.C++.Wprojection.$c.$w 2>&1
+      fi
+    done
+  done
+fi
+
+if [ X ]; then
+  for c in 256 192 128 96 64 48 32 24 16; do
+    for i in 1024 512 256 128 64; do
+      if [ $c -le $i ]; then
+	echo interpolation $c $i
+	$CXX -g -DMODE=2 -DX=`expr $c - 1` -DSUPPORT_U=`expr $i - 2` -DSUPPORT_V=`expr $i - 2` -DW_PLANES=32 -DTIMESTEPS=54 -DBLOCKS=40 UVW.o $CXXFLAGS Gridding.cc -o a.out.2.$c.$i
+	#prun -t 24:00:00 a.out.2.$c.$i 1 </dev/null >benchmarks/out.2xE5-2680.Intel.C++.Interpolation.$c.$i 2>&1 &
+	a.out.2.$c.$i >benchmarks/out.2xE5-2680.Intel.C++.Interpolation.$c.$i 2>&1
+      fi
+    done
+  done
+fi

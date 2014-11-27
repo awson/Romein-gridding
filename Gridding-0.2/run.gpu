@@ -1,0 +1,65 @@
+#!/bin/sh
+
+mkdir -p benchmarks
+
+if `false`; then
+  for c in 16 24 32 48 64 96 128 192 256; do
+    echo simple $c
+    rm -f Gridding-Cuda.o
+    MODE=0 SUPPORT_U=$c SUPPORT_V=$c TIMESTEPS=60 BLOCKS=36 make a.out-Cuda && \
+    NR_GPUS=1 a.out-Cuda|tee benchmarks/out.GTX680.Nvidia.CUDA.Simple.$c
+  done
+fi
+
+if `false`; then
+  #for w in 128 64 32 16; do
+  for w in 32 ; do
+    for c in 16 24 32 48 64 96 128 192 256; do
+      if [ $w -le 32 -o $c -le 128 ]; then
+	echo oversampling $c $w
+	rm -f Gridding-Cuda.o
+
+	if [ $c -le 16 ]; then
+	  export TIMESTEPS=10
+	  export BLOCKS=216
+	elif [ $c -le 24 ]; then
+	  export TIMESTEPS=20
+	  export BLOCKS=108
+	else
+	  export TIMESTEPS=30
+	  export BLOCKS=72
+	fi
+
+	MODE=1 SUPPORT_U=$c SUPPORT_V=$c W_PLANES=$w make a.out-Cuda && \
+	NR_GPUS=1 a.out-Cuda|tee benchmarks/out.GTX680.Nvidia.CUDA.Wprojection.$c.$w
+      fi
+    done
+  done
+fi
+
+if `true`; then
+  #for i in 64 128 256 512 1024; do
+  for i in 1024; do
+    #for c in 16 24 32 48 64 96 128 192 256; do
+    for c in 256; do
+      if [ $c -le $i ]; then
+	echo interpolation $c $i
+	rm -f Gridding-Cuda.o
+
+	if [ $c -le 16 ]; then
+	  export TIMESTEPS=10
+	  export BLOCKS=216
+	elif [ $c -le 24 ]; then
+	  export TIMESTEPS=20
+	  export BLOCKS=108
+	else
+	  export TIMESTEPS=30
+	  export BLOCKS=72
+	fi
+
+	MODE=2 X=`expr $c - 1` SUPPORT_U=`expr $i - 2` SUPPORT_V=`expr $i - 2` W_PLANES=32 make a.out-Cuda && \
+	NR_GPUS=1 a.out-Cuda|tee benchmarks/out.GTX680.Nvidia.CUDA.Interpolation.$c.$i
+      fi
+    done
+  done
+fi
