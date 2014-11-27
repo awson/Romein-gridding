@@ -46,6 +46,9 @@
 
 #if defined _WIN32 || defined __WIN32__ || defined _WIN64
 #include <windows.h>
+#ifdef _MSC_VER
+#define _assert(m, f, l) _wassert(L ## m, L ## f, l)
+#endif
 #endif
 
 
