@@ -57,6 +57,11 @@
 
 __device__ double atomicAdd(double* address, double val)
 {
+#ifdef FAKE_ATOMIC
+  double orig = *address;
+  *address = orig + val;
+  return orig;
+#else
   unsigned long long int* address_as_ull = (unsigned long long int*)address;
   unsigned long long int old = *address_as_ull, assumed;
   do {
@@ -67,6 +72,7 @@ __device__ double atomicAdd(double* address, double val)
        // Note: uses integer comparison to avoid hang in case of NaN (since NaN != NaN)
   } while (assumed != old);
   return __longlong_as_double(old);
+#endif
 }
 
 static __forceinline__ __device__ double2 fetch_double2(texture<int4, cudaTextureType1D, cudaReadModeElementType> t, int i)
