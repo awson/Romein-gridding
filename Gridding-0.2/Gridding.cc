@@ -43,11 +43,6 @@
 #include "Common.h"
 #include "Defines.h"
 
-#if defined _WIN32 || defined __WIN32__ || defined _WIN64
-#include "UVW.cc"
-#endif
-
-
 #if defined __OPENCL__
 #if MODE != MODE_SIMPLE && MODE != MODE_OVERSAMPLE
 #error Unsupported MODE in OpenCL
@@ -656,9 +651,7 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const float freque
   assert(NR_STATIONS <= 44);
   assert(TIMESTEPS <= 2160);
 
-#if defined __linux__
   extern double realUVW[2160][44 * 45 / 2][3];
-#endif
 
 //#pragma omp parallel for num_threads(4)
   for (unsigned bl = 0; bl < BASELINES; bl ++) {
@@ -989,7 +982,9 @@ void doCuda()
 
 //#pragma omp parallel num_threads(STREAMS)
   {
+#if defined __linux__
     set_affinity(device);
+#endif
     checkCudaCall(cudaSetDevice(device));
 
 #if defined MAP_OBJECTS
