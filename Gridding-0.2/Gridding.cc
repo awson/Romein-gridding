@@ -1465,6 +1465,7 @@ void doCPUgridding(GridType grid[],
             double    grid_v_frac = grid_v - grid_v_int;
 
 #if defined __AVX__
+            // FIXME: Float -> Double
             __m256 vis = _mm256_load_ps((const double *) &visibilities[bl][0][ch][0]);
             __m256 *gridptr = (__m256 *) &(*localGrid)[grid_v_int + v][grid_u_int][0];
 #endif
