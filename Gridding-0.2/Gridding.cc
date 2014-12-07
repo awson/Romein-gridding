@@ -598,6 +598,15 @@ __global__ void degrid(const GridType grid,
 #endif // defined DEGRIDDING
 #endif // defined CUDA
 
+// The code *already uses a lot of static data,
+// then one more would not change things significantly.
+#ifdef USE_REAL_UVW
+#ifdef COMPILE_EXE
+extern double realUVW[2160][44 * 45 / 2][3];
+#else
+static const double * realUVW;
+#endif
+#endif
 
 void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const double frequencies[CHANNELS], unsigned block)
 {
@@ -653,8 +662,6 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const double frequ
   assert(NR_STATIONS <= 44);
   assert(TIMESTEPS <= 2160);
 
-  extern double realUVW[2160][44 * 45 / 2][3];
-
 //#pragma omp parallel for num_threads(4)
   for (unsigned bl = 0; bl < BASELINES; bl ++) {
     unsigned mappedBaseline = bl + (unsigned) ((sqrt((double) (bl * 8 + 1) + 1) / 2));
@@ -663,8 +670,11 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const double frequ
 
     for (unsigned time = 0; time < TIMESTEPS; time ++) {
       for (unsigned ch = 0; ch < CHANNELS; ch ++) {
+#ifdef COMPILE_EXE
         const double *currentUVW = realUVW[block * TIMESTEPS + time][mappedBaseline];
-
+#else
+        const double *currentUVW = &realUVW[((block * TIMESTEPS + time) *  BASELINES + mappedBaseline) * 3];
+#endif
         uvw[bl][time][ch] = make_double3(
           scale_u[ch] * (double) currentUVW[0] + GRID_U / 2.0f - supportPixelsUsed[bl].x / 2.0f,
           scale_v[ch] * (double) currentUVW[1] + GRID_V / 2.0f - supportPixelsUsed[bl].y / 2.0f,
@@ -923,7 +933,7 @@ void initSupportOnHostAndDevice(SupportType *&hostSupport, cudaArray *&devSuppor
 }
 
 
-void doCuda()
+SharedObject<GridType> * doCuda()
 {
   int device = omp_get_thread_num();
 
@@ -941,7 +951,7 @@ void doCuda()
   checkCudaCall(cudaSetDevice(device));
   checkCudaCall(cudaSetDeviceFlags(cudaDeviceMapHost));
 
-  SharedObject<GridType> grids[STREAMS];
+  SharedObject<GridType> * grids = new SharedObject<GridType>[STREAMS];
 
 #pragma omp barrier
 
@@ -1075,6 +1085,8 @@ void doCuda()
   cudaFreeArray(devSupport);
   cudaFreeHost(*hostSupport);
 #endif
+
+  return grids;
 }
 
 #endif // defined __CUDA__
@@ -1778,6 +1790,7 @@ void doCPU()
 
 #endif
 
+#ifdef COMPILE_EXE
 
 int main()
 {
@@ -1800,3 +1813,34 @@ int main()
 
   return 0;
 }
+
+#else
+
+#ifdef _MSC_VER
+#define DLL_EXPORT __declspec(dllexport)
+#else
+#define DLL_EXPORT
+#endif
+
+extern "C" {
+
+DLL_EXPORT
+SharedObject<GridType> * romeinComputeGridOnCuda(const double * uvw, const double * amp) {
+  realUVW = uvw;
+  // FIXME! Add "real" amp usage!
+  return doCuda();
+}
+
+DLL_EXPORT
+GridType * romeinGetGridData(SharedObject<GridType> * grid) {
+  return grid->hostPtr;
+}
+
+DLL_EXPORT
+void romeinFinalizeGrid(SharedObject<GridType> * grid) {
+  delete [] grid;
+}
+
+}
+
+#endif
