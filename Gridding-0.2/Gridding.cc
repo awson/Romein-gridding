@@ -673,7 +673,9 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const double frequ
 #ifdef COMPILE_EXE
         const double *currentUVW = realUVW[block * TIMESTEPS + time][mappedBaseline];
 #else
-        const double *currentUVW = &realUVW[((block * TIMESTEPS + time) *  BASELINES + mappedBaseline) * 3];
+        // const double *currentUVW = &realUVW[((block * TIMESTEPS + time) *  BASELINES + mappedBaseline) * 3];
+        // OOPS! we have inverted(!) layout relatively to that of Romein
+        const double *currentUVW = &realUVW[(mappedBaseline * TIMESTEPS * BLOCKS + (block * TIMESTEPS + time)) * 3];
 #endif
         uvw[bl][time][ch] = make_double3(
           scale_u[ch] * (double) currentUVW[0] + GRID_U / 2.0f - supportPixelsUsed[bl].x / 2.0f,
