@@ -601,7 +601,7 @@ __global__ void degrid(const GridType grid,
 // The code *already uses a lot of static data,
 // then one more would not change things significantly.
 #ifdef USE_REAL_UVW
-#ifdef COMPILE_EXE
+#ifdef ORIGINAL_EXE
 extern double realUVW[2160][44 * 45 / 2][3];
 #else
 static const double * realUVW;
@@ -671,7 +671,7 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const double frequ
 
     for (unsigned time = 0; time < TIMESTEPS; time ++) {
       for (unsigned ch = 0; ch < CHANNELS; ch ++) {
-#ifdef COMPILE_EXE
+#ifdef ORIGINAL_EXE
         const double *currentUVW = realUVW[block * TIMESTEPS + time][mappedBaseline];
 #else
         // const double *currentUVW = &realUVW[((block * TIMESTEPS + time) *  BASELINES + mappedBaseline) * 3];
@@ -767,7 +767,7 @@ void initVisibilities(VisibilitiesType visibilities)
 
 //#pragma omp parallel for num_threads(4)
   for (unsigned i = 0; i < BASELINES * TIMESTEPS * CHANNELS * POLARIZATIONS; i ++)
-#ifdef COMPILE_EXE
+#ifdef ORIGINAL_EXE
     visibilities[0][0][0][i] = vis;
 #else
     visibilities[0][0][0][i] = amps[i];
@@ -1797,7 +1797,7 @@ void doCPU()
 
 #endif
 
-#ifdef COMPILE_EXE
+#ifdef ORIGINAL_EXE
 
 int main()
 {
