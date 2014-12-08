@@ -605,6 +605,7 @@ __global__ void degrid(const GridType grid,
 extern double realUVW[2160][44 * 45 / 2][3];
 #else
 static const double * realUVW;
+static const double2 * amps;
 #endif
 #endif
 
@@ -766,7 +767,11 @@ void initVisibilities(VisibilitiesType visibilities)
 
 //#pragma omp parallel for num_threads(4)
   for (unsigned i = 0; i < BASELINES * TIMESTEPS * CHANNELS * POLARIZATIONS; i ++)
+#ifdef COMPILE_EXE
     visibilities[0][0][0][i] = vis;
+#else
+    visibilities[0][0][0][i] = amps[i];
+#endif
 #endif
 }
 
@@ -1827,9 +1832,9 @@ int main()
 extern "C" {
 
 DLL_EXPORT
-SharedObject<GridType> * romeinComputeGridOnCuda(const double * uvw, const double * amp) {
+SharedObject<GridType> * romeinComputeGridOnCuda(const double * uvw, const double2 * amp) {
   realUVW = uvw;
-  // FIXME! Add "real" amp usage!
+  amps = amp;
   return doCuda();
 }
 
