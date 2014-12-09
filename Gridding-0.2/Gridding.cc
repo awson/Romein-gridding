@@ -667,7 +667,7 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const double frequ
   for (unsigned bl = 0; bl < BASELINES; bl ++) {
     // FIXME!!!
     // WTF is this? It goes beyond the end of data.
-    // It is also perhaps related to that mystical 45 instead of 43 original code.
+    // It is also perhaps related to that mystical 45 instead of 43 in the original code.
     // Ask people about this.
     // unsigned mappedBaseline = bl + (unsigned) ((sqrt((double) (bl * 8 + 1) + 1) / 2));
     unsigned mappedBaseline = bl;
