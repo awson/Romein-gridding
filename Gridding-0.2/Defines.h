@@ -63,8 +63,12 @@
 #define CELL_SIZE_V	(1.08*13107.2 / GRID_V)
 #define CELL_SIZE_W	(8192.0 / W_PLANES)
 
+#ifndef NR_STATIONS
 #define NR_STATIONS	44
+#endif
+
 #define BASELINES	(NR_STATIONS * (NR_STATIONS - 1) / 2)
+
 #define MAX_BASELINE_LENGTH	22000
 
 #if !defined CHANNELS
