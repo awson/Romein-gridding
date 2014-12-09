@@ -665,7 +665,12 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const double frequ
 
 //#pragma omp parallel for num_threads(4)
   for (unsigned bl = 0; bl < BASELINES; bl ++) {
-    unsigned mappedBaseline = bl + (unsigned) ((sqrt((double) (bl * 8 + 1) + 1) / 2));
+    // FIXME!!!
+    // WTF is this? It goes beyond the end of data.
+    // It is also perhaps related to that mystical 45 instead of 43 original code.
+    // Ask people about this.
+    // unsigned mappedBaseline = bl + (unsigned) ((sqrt((double) (bl * 8 + 1) + 1) / 2));
+    unsigned mappedBaseline = bl;
     supportPixelsUsed[bl].x = X; // SUPPORT_U / 2;
     supportPixelsUsed[bl].y = X; // SUPPORT_V / 2;
 
