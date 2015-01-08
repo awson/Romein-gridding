@@ -660,8 +660,8 @@ void initUVW(UVWtype uvw, uint2 supportPixelsUsed[BASELINES], const double frequ
     }
   }
 #else
-  assert(NR_STATIONS <= 44);
-  assert(TIMESTEPS <= 2160);
+  // assert(NR_STATIONS <= 44);
+  // assert(TIMESTEPS <= 2160);
 
 //#pragma omp parallel for num_threads(4)
   for (unsigned bl = 0; bl < BASELINES; bl ++) {
