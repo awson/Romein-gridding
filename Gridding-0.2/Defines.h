@@ -93,3 +93,11 @@
 
 #define ORDER_W_OV_OU_V_U	0
 #define ORDER_W_V_OV_U_OU	1
+
+#if !defined FREQ_START
+#define FREQ_START 59908828.7353515625
+#endif
+
+#if !defined FREQ_STEP
+#define FREQ_STEP 12207.03125
+#endif

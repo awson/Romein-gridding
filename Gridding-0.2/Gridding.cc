@@ -755,7 +755,7 @@ void initSupport(SupportType support)
 void initFrequencies(double frequencies[CHANNELS])
 {
   for (unsigned ch = 0; ch < CHANNELS; ch ++)
-    frequencies[ch] = 59908828.7353515625 + 12207.03125 * ch;
+    frequencies[ch] = FREQ_START + FREQ_STEP * ch;
 }
 
 
