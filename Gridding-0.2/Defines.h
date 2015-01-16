@@ -59,9 +59,21 @@
 #define OVERSAMPLE_U	8
 #define OVERSAMPLE_V	8
 
-#define CELL_SIZE_U	(1.08*13107.2 / GRID_U)
-#define CELL_SIZE_V	(1.08*13107.2 / GRID_V)
-#define CELL_SIZE_W	(8192.0 / W_PLANES)
+#ifndef U_DIAMETER
+#define U_DIAMETER (1.08*13107.2)
+#endif
+
+#ifndef V_DIAMETER
+#define V_DIAMETER (1.08*13107.2)
+#endif
+
+#ifndef W_DIAMETER
+#define W_DIAMETER 8192.0
+#endif
+
+#define CELL_SIZE_U	(U_DIAMETER / GRID_U)
+#define CELL_SIZE_V	(V_DIAMETER / GRID_V)
+#define CELL_SIZE_W	(W_DIAMETER / W_PLANES)
 
 #ifndef NR_STATIONS
 #define NR_STATIONS	44
