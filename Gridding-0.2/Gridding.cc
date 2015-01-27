@@ -1834,22 +1834,30 @@ int main()
 #define DLL_EXPORT
 #endif
 
+#ifndef FAKE_ATOMIC
+#define __DECO(a) a
+#else
+#define __DECO(a) a##_f
+#endif
+
 extern "C" {
 
 DLL_EXPORT
-SharedObject<GridType> * romeinComputeGridOnCuda(const double * uvw, const double2 * amp) {
+SharedObject<GridType> * __DECO(romeinComputeGridOnCuda) (const double * uvw, const double2 * amp)
+{
+
   realUVW = uvw;
   amps = amp;
   return doCuda();
 }
 
 DLL_EXPORT
-GridType * romeinGetGridData(SharedObject<GridType> * grid) {
+GridType * __DECO(romeinGetGridData)(SharedObject<GridType> * grid) {
   return grid->hostPtr;
 }
 
 DLL_EXPORT
-void romeinFinalizeGrid(SharedObject<GridType> * grid) {
+void __DECO(romeinFinalizeGrid)(SharedObject<GridType> * grid) {
   delete [] grid;
 }
 
